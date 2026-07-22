@@ -5,7 +5,7 @@
 <h1 align="center">QwenCloud AI Skills</h1>
 
 <p align="center">
-  Fold Qwen Cloud's AI skills into your agent. Just talk.
+  Fold QwenCloud's AI skills into your agent. Just talk.
 </p>
 
 <p align="center">
