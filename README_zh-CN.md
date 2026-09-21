@@ -25,7 +25,7 @@
 
 - 🤖 **Agent 原生** — Agent 帮你选模型、调参数、处理报错，你只管说需求。
 - ⚡ **一行安装** — 一条命令装完即用，零配置，无需对接 SDK。
-- 🧠 **8 个技能，一个入口** — 文本、图像、视频、语音、视觉、模型选择、认证、用量，全部内置。
+- 🧠 **9 个技能，一个入口** — 文本、图像、视频、语音、视觉、模型选择、认证、用量、支付，全部内置。
 - 🌐 **适配多种 Agent** — 可接入多种支持 [Agent Skills](https://agentskills.io) 的 Agent，即装即用。
 
 <p align="center">
@@ -129,6 +129,7 @@ npx skills add qwencloud/qwencloud-ai
 | `qwencloud-model-selector` | 根据场景推荐最合适的模型 |
 | `qwencloud-ops-auth` | API Key 与认证管理 |
 | `qwencloud-usage` | 用量查询、免费额度查看、订阅查询、账单与计费查询 |
+| `qwencloud-payment` | 支付中心——支付方式查看、绑定信用卡（仅打开官方页面）、消费限额查看（只读） |
 
 ---
 

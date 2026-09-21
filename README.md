@@ -25,7 +25,7 @@
 
 - 🤖 **Agent-native** — Your agent picks the model, tunes the call, and handles errors. You just talk.
 - ⚡ **One-line install** — One command and you're ready. No SDK, no boilerplate.
-- 🧠 **8 skills, one interface** — Text, image, video, voice, vision, model selection, auth， and usage — all built in.
+- 🧠 **9 skills, one interface** — Text, image, video, voice, vision, model selection, auth, usage, and payment — all built in.
 - 🌐 **Works across many agents** — Plug into many [Agent Skills](https://agentskills.io)-compatible agents instantly.
 
 <p align="center">
@@ -129,6 +129,7 @@ Tell your agent what you need — it writes the code, picks the right QwenCloud 
 | `qwencloud-model-selector` | Recommends the right model for your use case |
 | `qwencloud-ops-auth` | API key and authentication management |
 | `qwencloud-usage` | Usage queries, free tier checks, subscriptions, billing |
+| `qwencloud-payment` | Payment center — payment methods, card binding (opens official page only), spending limit (read-only) |
 
 ---
 
