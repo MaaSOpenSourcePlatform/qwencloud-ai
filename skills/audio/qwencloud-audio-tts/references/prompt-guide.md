@@ -1,5 +1,7 @@
 # Audio TTS — Prompt Guide
 
+Follow the [Region rules](../SKILL.md#region-rules) before using these URLs or examples. Substitute the resolved Region ID for `${QWEN_REGION}` in CDN links; direct curl/SDK examples use the same region.
+
 Techniques for optimizing TTS text input and voice instructions.
 
 > **🚫 Never override user-specified parameters.** If the user specified a model, voice, or text, use them exactly as given. The instruction templates below are only for a model currently marked instruction-compatible in the CDN model catalog, and only when the user asks for style control. NEVER switch models or inject instructions on your own initiative.
@@ -23,7 +25,7 @@ For mixed-language text, set `language_type: "Auto"`.
 
 > These templates apply ONLY when: (1) the user did NOT specify a model, AND (2) the user explicitly asks for a specific style/tone. Otherwise, do not add instructions.
 
-Fetch and read the current [QwenCloud audio TTS model catalog](https://alioth-intl.alicdn.com/skills-info/models/references/qwencloud-audio-tts-models.md) before choosing a model or instruction field. If CDN access fails, use the [local fallback](../cdn/references/qwencloud-audio-tts-models.md).
+Fetch and read the current [QwenCloud audio TTS model catalog](https://alioth-intl.alicdn.com/skills-info/${QWEN_REGION}/models/references/qwencloud-audio-tts-models.md) before choosing a model or instruction field. If CDN access fails, use the [local fallback](../cdn/references/qwencloud-audio-tts-models.md).
 
 Use the instruction field documented for the selected model; do not interchange `instructions` and `instruction`.
 

@@ -1,5 +1,7 @@
 # Vision — Prompt Guide
 
+Follow the [Region rules](../SKILL.md#region-rules) before using these URLs or examples. Substitute the resolved Region ID for `${QWEN_REGION}` in CDN links; direct curl/SDK examples use the same region.
+
 Techniques for crafting effective visual query prompts. If the user provides a specific query, use it as-is — suggest enhancements only.
 
 ## Task-Specific Templates
@@ -17,7 +19,7 @@ Techniques for crafting effective visual query prompts. If the user provides a s
 
 ## Thinking Mode Decision
 
-Fetch and read the current [QwenCloud vision model catalog](https://alioth-intl.alicdn.com/skills-info/models/references/qwencloud-vision-models.md) for scenario recommendations and per-model thinking defaults. If CDN access fails, use the [local fallback](../cdn/references/qwencloud-vision-models.md). Never swap a user-specified model or override `enable_thinking` without the user's explicit request, except that structured output is incompatible with thinking: the bundled scripts automatically use `enable_thinking: false` when it was omitted and reject explicit `true`.
+Fetch and read the current [QwenCloud vision model catalog](https://alioth-intl.alicdn.com/skills-info/${QWEN_REGION}/models/references/qwencloud-vision-models.md) for scenario recommendations and per-model thinking defaults. If CDN access fails, use the [local fallback](../cdn/references/qwencloud-vision-models.md). Never swap a user-specified model or override `enable_thinking` without the user's explicit request, except that structured output is incompatible with thinking: the bundled scripts automatically use `enable_thinking: false` when it was omitted and reject explicit `true`.
 
 ## Prompt Enhancement Patterns
 

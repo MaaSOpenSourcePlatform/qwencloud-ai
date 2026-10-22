@@ -113,8 +113,13 @@ def _ws_default_voices() -> dict[str, str]:
 
 # WebSocket endpoint paths
 _WS_PATH = "/api-ws/v1/inference"
-_WS_HOST_PAYG = "dashscope-intl.aliyuncs.com"
-_WS_HOST_TOKEN_PLAN = "token-plan.ap-southeast-1.maas.aliyuncs.com"
+
+
+def _ws_url() -> str:
+    """Use the shared Region, Token Plan and custom base URL routing."""
+    parsed = urlparse(native_base_url())
+    scheme = "wss" if parsed.scheme == "https" else "ws"
+    return f"{scheme}://{parsed.netloc}{_WS_PATH}"
 
 
 def _is_audio_file_output(path: Path) -> bool:
@@ -126,11 +131,18 @@ def _is_audio_file_output(path: Path) -> bool:
 # WebSocket minimal implementation (stdlib: ssl + socket + struct + hashlib)
 # ---------------------------------------------------------------------------
 
-def _ws_connect(host: str, path: str, api_key: str) -> socket.socket:
+def _ws_connect(host: str, path: str, api_key: str, *,
+                port: int = 443, secure: bool = True) -> socket.socket:
     """Perform WebSocket HTTP Upgrade handshake, return connected socket."""
-    ctx = ssl.create_default_context()
-    raw = socket.create_connection((host, 443), timeout=60)
-    sock = ctx.wrap_socket(raw, server_hostname=host)
+    raw = socket.create_connection((host, port), timeout=60)
+    if secure:
+        ctx = ssl.create_default_context()
+        sock = ctx.wrap_socket(raw, server_hostname=host)
+    else:
+        sock = raw
+    authority = f"[{host}]" if ":" in host else host
+    if port != (443 if secure else 80):
+        authority = f"{authority}:{port}"
 
     ws_key = hashlib.sha1(uuid_mod.uuid4().bytes).digest()
     import base64
@@ -138,7 +150,7 @@ def _ws_connect(host: str, path: str, api_key: str) -> socket.socket:
 
     handshake = (
         f"GET {path} HTTP/1.1\r\n"
-        f"Host: {host}\r\n"
+        f"Host: {authority}\r\n"
         f"Upgrade: websocket\r\n"
         f"Connection: Upgrade\r\n"
         f"Sec-WebSocket-Key: {ws_key_b64}\r\n"
@@ -310,11 +322,15 @@ def _ws_tts(api_key: str, model: str, text: str, voice: str,
 
     Returns dict with audio_file path and metadata.
     """
-    # Determine endpoint based on key type
-    if api_key.startswith("sk-sp-"):
-        host = _WS_HOST_TOKEN_PLAN
-    else:
-        host = _WS_HOST_PAYG
+    # require_api_key() has established credential routing. Reuse the same
+    # endpoint as HTTP so uploads, streaming and synthesis share one Region.
+    websocket_url = _ws_url()
+    endpoint = urlparse(websocket_url)
+    host = endpoint.hostname
+    if not host:
+        raise RuntimeError("The configured API base URL must include a hostname.")
+    secure = endpoint.scheme == "wss"
+    port = endpoint.port or (443 if secure else 80)
 
     # Resolve the model default only when no voice was supplied by the caller.
     # An explicit voice named "Cherry" must remain Cherry even though that is
@@ -326,8 +342,8 @@ def _ws_tts(api_key: str, model: str, text: str, voice: str,
 
     task_id = str(uuid_mod.uuid4())
 
-    print(f"Connecting to wss://{host}{_WS_PATH} ...", file=sys.stderr)
-    sock = _ws_connect(host, _WS_PATH, api_key)
+    print(f"Connecting to {websocket_url} ...", file=sys.stderr)
+    sock = _ws_connect(host, _WS_PATH, api_key, port=port, secure=secure)
 
     try:
         # 1. Send run-task

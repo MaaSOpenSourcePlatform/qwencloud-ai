@@ -1,10 +1,10 @@
 {
   "default_models": {
-    "t2v": "happyhorse-1.1-t2v",
+    "t2v": "wan3.0-video",
     "i2v": "happyhorse-1.1-i2v",
     "kf2v": "wan2.2-kf2v-flash",
     "r2v": "happyhorse-1.1-r2v",
-    "vace": "wan2.1-vace-plus",
+    "vace": null,
     "videoedit": "wan2.7-videoedit",
     "animate": "wan2.2-animate-move"
   },

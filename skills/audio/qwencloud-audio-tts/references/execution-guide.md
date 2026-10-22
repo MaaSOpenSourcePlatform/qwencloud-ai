@@ -1,5 +1,7 @@
 # Qwen Audio TTS — Execution Guide
 
+Follow the [Region rules](../SKILL.md#region-rules) before using these URLs or examples. Substitute the resolved Region ID for `${QWEN_REGION}` in CDN links; direct curl/SDK examples use the same region.
+
 Fallback paths when the bundled script (Path 1) fails or is unavailable.
 
 ## Path 0 · Environment Fix
@@ -20,7 +22,7 @@ After fixing, retry the script (Path 1). If the environment is unfixable, fall t
 **Step 1 — Synthesize speech:**
 
 ```bash
-curl -sS -X POST "https://dashscope-intl.aliyuncs.com/api/v1/services/aigc/multimodal-generation/generation" \
+curl -sS -X POST "https://${QWEN_REGION:-ap-southeast-1}.maas.qwencloudapi.com/api/v1/services/aigc/multimodal-generation/generation" \
   -H "Authorization: Bearer $DASHSCOPE_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
@@ -59,7 +61,7 @@ curl -o output.wav "AUDIO_URL_FROM_STEP_2"
 > **⚠️ Only use the instruct model + `instructions` when the user explicitly asked for instruction/style control.** This template is for that specific case — do NOT switch a user-specified model (e.g. `qwen-audio-3.0-tts-plus` or `qwen3-tts-flash`) to `qwen3-tts-instruct-flash`, and do NOT add `instructions` the user didn't request, even if the text "sounds like" an audiobook/radio-drama. Use the user's model as given.
 
 ```bash
-curl -sS -X POST "https://dashscope-intl.aliyuncs.com/api/v1/services/aigc/multimodal-generation/generation" \
+curl -sS -X POST "https://${QWEN_REGION:-ap-southeast-1}.maas.qwencloudapi.com/api/v1/services/aigc/multimodal-generation/generation" \
   -H "Authorization: Bearer $DASHSCOPE_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
@@ -78,7 +80,7 @@ curl -sS -X POST "https://dashscope-intl.aliyuncs.com/api/v1/services/aigc/multi
 This is a direct API fallback. Qwen3-TTS supports SSE at the API level, but the bundled `scripts/tts.py` HTTP path is non-streaming and does not consume its request JSON `stream` field.
 
 ```bash
-curl -sS --no-buffer -X POST "https://dashscope-intl.aliyuncs.com/api/v1/services/aigc/multimodal-generation/generation" \
+curl -sS --no-buffer -X POST "https://${QWEN_REGION:-ap-southeast-1}.maas.qwencloudapi.com/api/v1/services/aigc/multimodal-generation/generation" \
   -H "Authorization: Bearer $DASHSCOPE_API_KEY" \
   -H "Content-Type: application/json" \
   -H "X-DashScope-SSE: enable" \
@@ -96,7 +98,7 @@ Each SSE event contains a Base64-encoded audio chunk. Decode and concatenate to 
 ### Region endpoints
 | Region | Base URL |
 |--------|----------|
-| Singapore (default) | `https://dashscope-intl.aliyuncs.com/api/v1` |
+| Selected `QWEN_REGION` (default: `ap-southeast-1`) | `https://${QWEN_REGION}.maas.qwencloudapi.com/api/v1` |
 ## Paths 3–5 · Fallback Cascade
 
 When agent-executed paths (1–2) fail or shell is restricted:

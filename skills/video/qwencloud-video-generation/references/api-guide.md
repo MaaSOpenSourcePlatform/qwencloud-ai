@@ -1,5 +1,7 @@
 # Qwen Video Generation (Wan) — API Supplementary Guide
 
+Follow the [Region rules](../SKILL.md#region-rules) before using these URLs or examples. Substitute the resolved Region ID for `${QWEN_REGION}` in CDN links; ordinary curl/SDK examples use the same region. Save the submission `QWEN_REGION` with every asynchronous task ID and restore it before polling or recovery.
+
 > **Content validity**: 2026-03 | **Sources**: [Overview](https://docs.qwencloud.com/developer-guides/getting-started/video-models) · [T2V API](https://docs.qwencloud.com/api-reference/video-generation/wan-text-to-video/create-task) · [I2V API](https://docs.qwencloud.com/api-reference/video-generation/wan-image-to-video-first-frame/create-task) · [T2V Guide](https://docs.qwencloud.com/developer-guides/video-generation/text-to-video) · [I2V Guide](https://docs.qwencloud.com/developer-guides/video-generation/image-to-video) · [KF2V Guide](https://docs.qwencloud.com/developer-guides/video-generation/image-to-video-first-last) · [R2V Guide](https://docs.qwencloud.com/developer-guides/video-generation/reference-video) · [VACE Guide](https://docs.qwencloud.com/developer-guides/video-generation/video-editing)
 
 ---
@@ -12,7 +14,7 @@ Video generation service based on the Wan model family. Supports **5 creation mo
 
 ## Use Cases
 
-Fetch and read the current [QwenCloud video-generation model catalog](https://alioth-intl.alicdn.com/skills-info/models/references/qwencloud-video-generation-models.md) for mode recommendations, defaults, compatibility, and basic model information. If CDN access fails, use the [local fallback](../cdn/references/qwencloud-video-generation-models.md).
+Fetch and read the current [QwenCloud video-generation model catalog](https://alioth-intl.alicdn.com/skills-info/${QWEN_REGION}/models/references/qwencloud-video-generation-models.md) for mode recommendations, defaults, compatibility, and basic model information. If CDN access fails, use the [local fallback](../cdn/references/qwencloud-video-generation-models.md).
 
 ---
 
@@ -24,14 +26,14 @@ All video APIs use asynchronous invocation: **Step 1: Submit task** → receive 
 
 ```bash
 # Step 1: Submit
-curl -sS 'https://dashscope-intl.aliyuncs.com/api/v1/services/aigc/video-generation/video-synthesis' \
+curl -sS "https://${QWEN_REGION:-ap-southeast-1}.maas.qwencloudapi.com/api/v1/services/aigc/video-generation/video-synthesis" \
   -H 'X-DashScope-Async: enable' \
   -H "Authorization: Bearer $DASHSCOPE_API_KEY" \
   -H 'Content-Type: application/json' \
   -d '{"model":"wan2.6-t2v","input":{"prompt":"A kitten running in the moonlight"},"parameters":{"size":"1280*720","duration":5}}'
 
 # Step 2: Poll (using the returned task_id)
-curl -sS "https://dashscope-intl.aliyuncs.com/api/v1/tasks/{task_id}" \
+curl -sS "https://${QWEN_REGION:-ap-southeast-1}.maas.qwencloudapi.com/api/v1/tasks/{task_id}" \
   -H "Authorization: Bearer $DASHSCOPE_API_KEY"
 ```
 

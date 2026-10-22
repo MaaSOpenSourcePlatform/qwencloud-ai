@@ -2,14 +2,14 @@
 
 Additional curl templates for Path 2 · Direct API Call. The primary example (single image URL) is in SKILL.md. These cover other common input scenarios.
 
-All examples use the OpenAI-compatible chat completions endpoint. Replace the base URL for different regions (see SKILL.md Region endpoints table).
+All examples use the OpenAI-compatible chat completions endpoint. Resolve and export `QWEN_REGION` using the [Region rules](../SKILL.md#region-rules); the examples default to `ap-southeast-1` only when it is unset or empty.
 
 ## Local Image (Base64)
 
 Encode the file inline. **Only for small files < 7 MB** (base64 adds ~33%; API limit is 10 MB). For larger files or videos, use Path 1 (Script Execution) with `--upload-files`, or provide a URL instead.
 
 ```bash
-curl -sS -X POST "https://dashscope-intl.aliyuncs.com/compatible-mode/v1/chat/completions" \
+curl -sS -X POST "https://${QWEN_REGION:-ap-southeast-1}.maas.qwencloudapi.com/compatible-mode/v1/chat/completions" \
   -H "Authorization: Bearer $DASHSCOPE_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
@@ -30,7 +30,7 @@ curl -sS -X POST "https://dashscope-intl.aliyuncs.com/compatible-mode/v1/chat/co
 Include multiple `image_url` entries in the content array:
 
 ```bash
-curl -sS -X POST "https://dashscope-intl.aliyuncs.com/compatible-mode/v1/chat/completions" \
+curl -sS -X POST "https://${QWEN_REGION:-ap-southeast-1}.maas.qwencloudapi.com/compatible-mode/v1/chat/completions" \
   -H "Authorization: Bearer $DASHSCOPE_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
@@ -52,7 +52,7 @@ curl -sS -X POST "https://dashscope-intl.aliyuncs.com/compatible-mode/v1/chat/co
 For local videos < 7 MB (e.g. short generated clips), base64 works. For larger videos, **use a URL** (online or temp-uploaded via `--upload-files`).
 
 ```bash
-curl -sS -X POST "https://dashscope-intl.aliyuncs.com/compatible-mode/v1/chat/completions" \
+curl -sS -X POST "https://${QWEN_REGION:-ap-southeast-1}.maas.qwencloudapi.com/compatible-mode/v1/chat/completions" \
   -H "Authorization: Bearer $DASHSCOPE_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
@@ -73,7 +73,7 @@ curl -sS -X POST "https://dashscope-intl.aliyuncs.com/compatible-mode/v1/chat/co
 Use the specialized OCR model for text extraction:
 
 ```bash
-curl -sS -X POST "https://dashscope-intl.aliyuncs.com/compatible-mode/v1/chat/completions" \
+curl -sS -X POST "https://${QWEN_REGION:-ap-southeast-1}.maas.qwencloudapi.com/compatible-mode/v1/chat/completions" \
   -H "Authorization: Bearer $DASHSCOPE_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{

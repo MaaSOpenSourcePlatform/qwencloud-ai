@@ -1,5 +1,7 @@
 # Pricing Guidance & Cost Estimation Disclaimer
 
+Follow the [Region rules](../SKILL.md#region-rules) before using these URLs or examples. Substitute the resolved Region ID for `${QWEN_REGION}` in CDN links; direct curl/SDK examples use the same region.
+
 This file holds the full pricing guidance, the **mandatory** cost-estimation disclaimer (in both Chinese and
 English), and the usage/billing console reference. SKILL.md keeps only a one-line pointer; whenever you produce
 a cost-related answer, **you must read and apply this file**.
@@ -22,7 +24,7 @@ a cost-related answer, **you must read and apply this file**.
 - **Cost tips**:
     - Use Batch API for 50% off in non-realtime scenarios
     - Enable context cache for repeated contexts
-    - Use the lower-cost option recommended by the [CDN model catalog](https://alioth-intl.alicdn.com/skills-info/models/references/qwencloud-model-recommendations.md) for non-critical tasks. If CDN access fails, use the [local fallback](../cdn/references/qwencloud-model-recommendations.md).
+    - Use the lower-cost option recommended by the [CDN model catalog](https://alioth-intl.alicdn.com/skills-info/${QWEN_REGION}/models/references/qwencloud-model-recommendations.md) for non-critical tasks. If CDN access fails, use the [local fallback](../cdn/references/qwencloud-model-recommendations.md).
     - Watch for tiered pricing breakpoints (≤32K, ≤128K, ≤256K, ≤1M)
 
 ## Usage & Billing Console

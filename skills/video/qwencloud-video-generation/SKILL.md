@@ -14,6 +14,14 @@ This skill is part of **qwencloud/qwencloud-ai**.
 > - **kf2v (First+Last Frame)**: Duration is **fixed at 5 seconds** — other values will fail. Output is **silent only**.
 > - **Resolution parameters vary by model family, not mode alone**: Fetch the current model catalog before choosing `size`, `resolution`, or `ratio`.
 
+## Region rules
+
+- Use the Region ID requested for this operation first, then the existing `QWEN_REGION` from the environment or `.env`, then `ap-southeast-1` (Singapore). For a Chinese region name, fetch the root [region map](https://alioth-intl.alicdn.com/skills-info/regions.md) to resolve its ID. If the map is unavailable, an explicit Region ID still works; an unresolved name requires a Region ID, never a silent switch to Singapore.
+- Pass only the Region ID through `QWEN_REGION` when calling Python. Ordinary model requests use `${QWEN_REGION}.maas.qwencloudapi.com`; HTTP, SSE, upload policy, task queries, and WebSocket use that same region and retain their protocol paths. Replace `${QWEN_REGION}` in CDN URLs with the selected ID before fetching; the manifest is `https://alioth-intl.alicdn.com/skills-info/${QWEN_REGION}/manifest.json`.
+- Token Plan keeps its dedicated endpoint and credential logic. Preserve the advanced `QWEN_BASE_URL` override; legacy `QWEN_REGION=none` with a custom base URL uses the `ap-southeast-1` model CDN directory. CLI commands and arguments are unchanged.
+- Regional CDN catalogs are temporary copies, pending regional model, pricing, and source verification. If the CDN is unavailable, use the bundled local snapshot as the Singapore default fallback; its source region is still unverified. A catalog fallback never changes the selected inference region.
+- Keep each asynchronous task's submission region with its task ID. Use that same `QWEN_REGION` for polling and recovery, even if the current default has changed.
+
 ## Skill directory
 
 Use this skill's internal files to execute and learn. Load reference files on demand when the default path fails or you need details.
@@ -60,7 +68,7 @@ print(detect_api_key_type('scripts/qwencloud_lib.py'))
 | `payg` | Standard PAYG key detected |
 | `not-set` | No API key found in environment |
 
-For Token Plan, fetch and read the current [Token Plan model catalog](https://alioth-intl.alicdn.com/skills-info/models/references/qwencloud-token-plan-models.md), then use an exact listed model. If CDN access fails, use the [local fallback](cdn/references/qwencloud-token-plan-models.md).
+For Token Plan, fetch and read the current [Token Plan model catalog](https://alioth-intl.alicdn.com/skills-info/${QWEN_REGION}/models/references/qwencloud-token-plan-models.md), then use an exact listed model. If CDN access fails, use the [local fallback](cdn/references/qwencloud-token-plan-models.md).
 
 ## Mode Selection Guide
 
@@ -90,7 +98,7 @@ For Token Plan, fetch and read the current [Token Plan model catalog](https://al
 
 ## Models
 
-Before selecting, recommending, or defaulting a model, fetch and read the current [QwenCloud video-generation model catalog](https://alioth-intl.alicdn.com/skills-info/models/references/qwencloud-video-generation-models.md). It contains the model list, basic model information, mode recommendations, compatibility notes, and defaults. If CDN access fails, use the [local fallback](cdn/references/qwencloud-video-generation-models.md).
+Before selecting, recommending, or defaulting a model, fetch and read the current [QwenCloud video-generation model catalog](https://alioth-intl.alicdn.com/skills-info/${QWEN_REGION}/models/references/qwencloud-video-generation-models.md). It contains the model list, basic model information, mode recommendations, compatibility notes, and defaults. If CDN access fails, use the [local fallback](cdn/references/qwencloud-video-generation-models.md).
 
 > **⚠️ Important**: The model catalog is a **point-in-time snapshot** and may be outdated. Model availability
 > changes frequently. **Always check the [official model list](https://www.qwencloud.com/models)
@@ -208,7 +216,7 @@ The resolution field varies by model family. Check the model catalog above befor
 > 🚨 **NEVER guess or fabricate any price figure.** Always direct the user to the
 > [official pricing page](https://docs.qwencloud.com/developer-guides/getting-started/pricing) for exact rates.
 
-Cost is billed per second of generated video. Price varies by model and resolution. Fetch the [CDN model-pricing reference](https://alioth-intl.alicdn.com/skills-info/models/references/qwencloud-model-pricing.md), and use the official pricing page for exact current rates. Some models may offer a limited free quota — **do not assume any call is free**; use the **qwencloud-usage** skill to check remaining free tier quota, or verify in the user's [QwenCloud console](https://home.qwencloud.com/benefits). If CDN access fails, use the [local fallback](cdn/references/qwencloud-model-pricing.md).
+Cost is billed per second of generated video. Price varies by model and resolution. Fetch the [CDN model-pricing reference](https://alioth-intl.alicdn.com/skills-info/${QWEN_REGION}/models/references/qwencloud-model-pricing.md), and use the official pricing page for exact current rates. Some models may offer a limited free quota — **do not assume any call is free**; use the **qwencloud-usage** skill to check remaining free tier quota, or verify in the user's [QwenCloud console](https://home.qwencloud.com/benefits). If CDN access fails, use the [local fallback](cdn/references/qwencloud-model-pricing.md).
 
 To check actual usage and bills: use the **qwencloud-usage** skill, or visit the console:
 [Usage Analytics](https://home.qwencloud.com/analytics) |
@@ -265,7 +273,7 @@ Prefer the **current working directory**. Default subdirectory: `./output/qwencl
 
 ## Token Plan Support
 
-Token Plan supports only a subset of video models. Fetch and read the current [Token Plan model catalog](https://alioth-intl.alicdn.com/skills-info/models/references/qwencloud-token-plan-models.md) before selecting or validating a model. If CDN access fails, use the [local fallback](cdn/references/qwencloud-token-plan-models.md).
+Token Plan supports only a subset of video models. Fetch and read the current [Token Plan model catalog](https://alioth-intl.alicdn.com/skills-info/${QWEN_REGION}/models/references/qwencloud-token-plan-models.md) before selecting or validating a model. If CDN access fails, use the [local fallback](cdn/references/qwencloud-token-plan-models.md).
 
 Only modes with a compatible model in the current Token Plan catalog can use Token Plan. A request for another mode may return a service error; do not silently switch the requested model or mode.
 

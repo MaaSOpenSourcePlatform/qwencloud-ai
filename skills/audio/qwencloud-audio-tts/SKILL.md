@@ -9,6 +9,14 @@ compatibility: "Requires Python 3.9+; curl is PAYG-only. Cursor: auto-loaded. Cl
 Synthesize natural speech from text using Qwen TTS models.
 This skill is part of **qwencloud/qwencloud-ai**.
 
+## Region rules
+
+- Use the Region ID requested for this operation first, then the existing `QWEN_REGION` from the environment or `.env`, then `ap-southeast-1` (Singapore). For a Chinese region name, fetch the root [region map](https://alioth-intl.alicdn.com/skills-info/regions.md) to resolve its ID. If the map is unavailable, an explicit Region ID still works; an unresolved name requires a Region ID, never a silent switch to Singapore.
+- Pass only the Region ID through `QWEN_REGION` when calling Python. Ordinary model requests use `${QWEN_REGION}.maas.qwencloudapi.com`; HTTP, SSE, upload policy, task queries, and WebSocket use that same region and retain their protocol paths. Replace `${QWEN_REGION}` in CDN URLs with the selected ID before fetching; the manifest is `https://alioth-intl.alicdn.com/skills-info/${QWEN_REGION}/manifest.json`.
+- Token Plan keeps its dedicated endpoint and credential logic. Preserve the advanced `QWEN_BASE_URL` override; legacy `QWEN_REGION=none` with a custom base URL uses the `ap-southeast-1` model CDN directory. CLI commands and arguments are unchanged.
+- Regional CDN catalogs are temporary copies, pending regional model, pricing, and source verification. If the CDN is unavailable, use the bundled local snapshot as the Singapore default fallback; its source region is still unverified. A catalog fallback never changes the selected inference region.
+- Keep each asynchronous task's submission region with its task ID. Use that same `QWEN_REGION` for polling and recovery, even if the current default has changed.
+
 ## Skill directory
 
 Use this skill's internal files to execute and learn. Load reference files on demand when the default path fails or you need details.
@@ -53,7 +61,7 @@ print(detect_api_key_type('scripts/qwencloud_lib.py'))
 | `payg` | Standard PAYG key detected |
 | `not-set` | No API key found in environment |
 
-For Token Plan, fetch and read the current [Token Plan model catalog](https://alioth-intl.alicdn.com/skills-info/models/references/qwencloud-token-plan-models.md), then use an exact listed model with `scripts/tts.py`. If CDN access fails, use the [local fallback](cdn/references/qwencloud-token-plan-models.md).
+For Token Plan, fetch and read the current [Token Plan model catalog](https://alioth-intl.alicdn.com/skills-info/${QWEN_REGION}/models/references/qwencloud-token-plan-models.md), then use an exact listed model with `scripts/tts.py`. If CDN access fails, use the [local fallback](cdn/references/qwencloud-token-plan-models.md).
 
 ## Model Selection
 
@@ -64,7 +72,7 @@ For Token Plan, fetch and read the current [Token Plan model catalog](https://al
 >
 > Model selection guidance below applies **only when the user has NOT specified a model**.
 
-Before selecting, recommending, or defaulting a model, fetch and read the current [QwenCloud audio TTS model catalog](https://alioth-intl.alicdn.com/skills-info/models/references/qwencloud-audio-tts-models.md). It contains the model list, basic model information, script and voice compatibility, recommendations, and defaults. If CDN access fails, use the [local fallback](cdn/references/qwencloud-audio-tts-models.md).
+Before selecting, recommending, or defaulting a model, fetch and read the current [QwenCloud audio TTS model catalog](https://alioth-intl.alicdn.com/skills-info/${QWEN_REGION}/models/references/qwencloud-audio-tts-models.md). It contains the model list, basic model information, script and voice compatibility, recommendations, and defaults. If CDN access fails, use the [local fallback](cdn/references/qwencloud-audio-tts-models.md).
 
 Consult the **qwencloud-model-selector** skill when model choice depends on capability, scenario, or pricing. CosyVoice requires the `dashscope` SDK and uses different voices; see [cosyvoice-guide.md](references/cosyvoice-guide.md).
 
@@ -224,7 +232,7 @@ When passing generated audio to another skill (e.g., video-gen audio overlay):
 > [Pay-as-you-go Billing](https://home.qwencloud.com/billing/pay-as-you-go) |
 > [Coding Plan Billing](https://home.qwencloud.com/billing/coding-plan)
 >
-> For the current pricing model list and billing units, fetch the [CDN model-pricing reference](https://alioth-intl.alicdn.com/skills-info/models/references/qwencloud-model-pricing.md). If CDN access fails, use the [local fallback](cdn/references/qwencloud-model-pricing.md).
+> For the current pricing model list and billing units, fetch the [CDN model-pricing reference](https://alioth-intl.alicdn.com/skills-info/${QWEN_REGION}/models/references/qwencloud-model-pricing.md). If CDN access fails, use the [local fallback](cdn/references/qwencloud-model-pricing.md).
 >
 > **NEVER fabricate, guess, or construct usage/billing/console URLs.** Only provide the exact links listed in this skill. If a URL is not listed here, do not invent one.
 
@@ -236,7 +244,7 @@ Prefer the **current working directory**. Default subdirectory: `./output/qwencl
 
 ## Token Plan Support
 
-Token Plan supports only a subset of TTS models. Fetch and read the current [Token Plan model catalog](https://alioth-intl.alicdn.com/skills-info/models/references/qwencloud-token-plan-models.md) before selecting or validating a model. If CDN access fails, use the [local fallback](cdn/references/qwencloud-token-plan-models.md).
+Token Plan supports only a subset of TTS models. Fetch and read the current [Token Plan model catalog](https://alioth-intl.alicdn.com/skills-info/${QWEN_REGION}/models/references/qwencloud-token-plan-models.md) before selecting or validating a model. If CDN access fails, use the [local fallback](cdn/references/qwencloud-token-plan-models.md).
 
 When a Token Plan key is combined with an unsupported model, `tts.py` prints a warning to stderr listing the currently supported models and suggesting alternatives; it does not block the call. If you see this warning, tell the user which models the current catalog supports and offer either a catalog-listed alternative or a PAYG key for the original model. Never silently replace an explicitly requested model.
 

@@ -1,12 +1,14 @@
 # Workflow Recommendations
 
+Follow the [Region rules](../SKILL.md#region-rules) before using these URLs or examples. Substitute the resolved Region ID for `${QWEN_REGION}` in CDN links; direct curl/SDK examples use the same region.
+
 When user requirements exceed a single mode's limits, **suggest combining modes or switching to a more capable model** before starting. Ask the user to confirm the approach.
 
 ## Duration > 5s
 
 kf2v (first+last frame) and vace are capped at **5s**. If the user wants a longer video:
 
-1. **Preferred**: Fetch the [CDN model catalog](https://alioth-intl.alicdn.com/skills-info/models/references/qwencloud-video-generation-models.md) and select a current t2v or i2v model that supports the required duration and audio behavior. If the user has a first-frame image, i2v is a direct replacement for kf2v with longer-duration support. If CDN access fails, use the [local fallback](../cdn/references/qwencloud-video-generation-models.md).
+1. **Preferred**: Fetch the [CDN model catalog](https://alioth-intl.alicdn.com/skills-info/${QWEN_REGION}/models/references/qwencloud-video-generation-models.md) and select a current t2v or i2v model that supports the required duration and audio behavior. If the user has a first-frame image, i2v is a direct replacement for kf2v with longer-duration support. If CDN access fails, use the [local fallback](../cdn/references/qwencloud-video-generation-models.md).
 2. **If kf2v is essential** (user needs both first AND last frame control): Generate the 5s kf2v video first, then extend it using **vace `video_extension`** — trim the kf2v output to a ≤3s tail clip and use it as `first_clip_url` to generate the next 5s segment. Repeat for additional segments, then concatenate all segments (see [merge-media.md](merge-media.md)).
 3. **For any mode**: To produce videos >15s, chain multiple generations — use the last frame or tail clip of each segment as input for the next. Concatenate final segments (see [merge-media.md](merge-media.md)). Inform the user this is a multi-step workflow.
 

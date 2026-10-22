@@ -1,5 +1,7 @@
 # Qwen Image Generation — Execution Guide
 
+Follow the [Region rules](../SKILL.md#region-rules) before using these URLs or examples. Substitute the resolved Region ID for `${QWEN_REGION}` in CDN links; ordinary curl/SDK examples use the same region. Save the submission `QWEN_REGION` with every asynchronous task ID and restore it before polling or recovery.
+
 Fallback paths when the bundled script (Path 1) fails or is unavailable.
 
 ## Path 0 · Environment Fix
@@ -17,12 +19,12 @@ After fixing, retry the script (Path 1). If the environment is unfixable, fall t
 
 ### Sync mode
 
-Fetch the [CDN model catalog](https://alioth-intl.alicdn.com/skills-info/models/references/qwencloud-image-generation-models.md) before choosing a model; the example below demonstrates the synchronous request path. If CDN access fails, use the [local fallback](../cdn/references/qwencloud-image-generation-models.md). Preserve an explicitly selected model.
+Fetch the [CDN model catalog](https://alioth-intl.alicdn.com/skills-info/${QWEN_REGION}/models/references/qwencloud-image-generation-models.md) before choosing a model; the example below demonstrates the synchronous request path. If CDN access fails, use the [local fallback](../cdn/references/qwencloud-image-generation-models.md). Preserve an explicitly selected model.
 
 **Step 1 — Generate image:**
 
 ```bash
-curl -sS -X POST "https://dashscope-intl.aliyuncs.com/api/v1/services/aigc/multimodal-generation/generation" \
+curl -sS -X POST "https://${QWEN_REGION:-ap-southeast-1}.maas.qwencloudapi.com/api/v1/services/aigc/multimodal-generation/generation" \
   -H "Authorization: Bearer $DASHSCOPE_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
@@ -60,7 +62,7 @@ curl -o image.png "IMAGE_URL_FROM_STEP_2"
 **Step 1 — Submit task:**
 
 ```bash
-curl -sS -X POST "https://dashscope-intl.aliyuncs.com/api/v1/services/aigc/image-generation/generation" \
+curl -sS -X POST "https://${QWEN_REGION:-ap-southeast-1}.maas.qwencloudapi.com/api/v1/services/aigc/image-generation/generation" \
   -H "Authorization: Bearer $DASHSCOPE_API_KEY" \
   -H "Content-Type: application/json" \
   -H "X-DashScope-Async: enable" \
@@ -82,7 +84,7 @@ Extract `output.task_id` from response.
 **Step 2 — Poll until done** (repeat every 5–10s):
 
 ```bash
-curl -sS "https://dashscope-intl.aliyuncs.com/api/v1/tasks/TASK_ID" \
+curl -sS "https://${QWEN_REGION:-ap-southeast-1}.maas.qwencloudapi.com/api/v1/tasks/TASK_ID" \
   -H "Authorization: Bearer $DASHSCOPE_API_KEY"
 ```
 
@@ -94,18 +96,18 @@ Wait until `output.task_status` is `SUCCEEDED` (or `FAILED`).
 curl -o image.png "IMAGE_URL_FROM_POLL_RESPONSE"
 ```
 
-**Region endpoints** (replace base URL as needed):
+**Region endpoints** (resolve `QWEN_REGION` before constructing the URL):
 
 | Region | Base URL |
 |--------|----------|
-| Singapore (default) | `https://dashscope-intl.aliyuncs.com/api/v1` |
+| Selected `QWEN_REGION` (default: `ap-southeast-1`) | `https://${QWEN_REGION}.maas.qwencloudapi.com/api/v1` |
 
 ### wan2.7-image-pro: Text-to-image with thinking mode (sync)
 
 **Step 1 — Generate image:**
 
 ```bash
-curl -sS -X POST "https://dashscope-intl.aliyuncs.com/api/v1/services/aigc/multimodal-generation/generation" \
+curl -sS -X POST "https://${QWEN_REGION:-ap-southeast-1}.maas.qwencloudapi.com/api/v1/services/aigc/multimodal-generation/generation" \
   -H "Authorization: Bearer $DASHSCOPE_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
@@ -127,7 +129,7 @@ curl -sS -X POST "https://dashscope-intl.aliyuncs.com/api/v1/services/aigc/multi
 ### wan2.7-image-pro: Sequential multi-image (sync)
 
 ```bash
-curl -sS -X POST "https://dashscope-intl.aliyuncs.com/api/v1/services/aigc/multimodal-generation/generation" \
+curl -sS -X POST "https://${QWEN_REGION:-ap-southeast-1}.maas.qwencloudapi.com/api/v1/services/aigc/multimodal-generation/generation" \
   -H "Authorization: Bearer $DASHSCOPE_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
@@ -149,7 +151,7 @@ Multiple images returned in `output.choices[0].message.content[].image`.
 ### wan2.7-image-pro: Image editing with references (sync)
 
 ```bash
-curl -sS -X POST "https://dashscope-intl.aliyuncs.com/api/v1/services/aigc/multimodal-generation/generation" \
+curl -sS -X POST "https://${QWEN_REGION:-ap-southeast-1}.maas.qwencloudapi.com/api/v1/services/aigc/multimodal-generation/generation" \
   -H "Authorization: Bearer $DASHSCOPE_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
@@ -176,7 +178,7 @@ Extract image URL from `output.choices[0].message.content[0].image`, then downlo
 **Step 1 — Generate edited image:**
 
 ```bash
-curl -sS -X POST "https://dashscope-intl.aliyuncs.com/api/v1/services/aigc/multimodal-generation/generation" \
+curl -sS -X POST "https://${QWEN_REGION:-ap-southeast-1}.maas.qwencloudapi.com/api/v1/services/aigc/multimodal-generation/generation" \
   -H "Authorization: Bearer $DASHSCOPE_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
@@ -218,7 +220,7 @@ curl -o edited.png "IMAGE_URL_FROM_STEP_2"
 ### wan2.6-image: Multi-image composition (sync)
 
 ```bash
-curl -sS -X POST "https://dashscope-intl.aliyuncs.com/api/v1/services/aigc/multimodal-generation/generation" \
+curl -sS -X POST "https://${QWEN_REGION:-ap-southeast-1}.maas.qwencloudapi.com/api/v1/services/aigc/multimodal-generation/generation" \
   -H "Authorization: Bearer $DASHSCOPE_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
@@ -239,7 +241,7 @@ curl -sS -X POST "https://dashscope-intl.aliyuncs.com/api/v1/services/aigc/multi
 **Step 1 — Submit task:**
 
 ```bash
-curl -sS -X POST "https://dashscope-intl.aliyuncs.com/api/v1/services/aigc/image-generation/generation" \
+curl -sS -X POST "https://${QWEN_REGION:-ap-southeast-1}.maas.qwencloudapi.com/api/v1/services/aigc/image-generation/generation" \
   -H "Authorization: Bearer $DASHSCOPE_API_KEY" \
   -H "Content-Type: application/json" \
   -H "X-DashScope-Async: enable" \
@@ -259,7 +261,7 @@ Extract `output.task_id` from the response.
 **Step 2 — Poll until done** (repeat every 10s):
 
 ```bash
-curl -sS "https://dashscope-intl.aliyuncs.com/api/v1/tasks/TASK_ID" \
+curl -sS "https://${QWEN_REGION:-ap-southeast-1}.maas.qwencloudapi.com/api/v1/tasks/TASK_ID" \
   -H "Authorization: Bearer $DASHSCOPE_API_KEY"
 ```
 
@@ -279,7 +281,7 @@ curl -o image_3.png "IMAGE_URL_3"
 **Step 1 — Submit task:**
 
 ```bash
-curl -sS -X POST "https://dashscope-intl.aliyuncs.com/api/v1/services/aigc/image2image/image-synthesis" \
+curl -sS -X POST "https://${QWEN_REGION:-ap-southeast-1}.maas.qwencloudapi.com/api/v1/services/aigc/image2image/image-synthesis" \
   -H "Authorization: Bearer $DASHSCOPE_API_KEY" \
   -H "Content-Type: application/json" \
   -H "X-DashScope-Async: enable" \
@@ -298,7 +300,7 @@ Extract `output.task_id` from response.
 **Step 2 — Poll until done** (repeat every 5–10s):
 
 ```bash
-curl -sS "https://dashscope-intl.aliyuncs.com/api/v1/tasks/TASK_ID" \
+curl -sS "https://${QWEN_REGION:-ap-southeast-1}.maas.qwencloudapi.com/api/v1/tasks/TASK_ID" \
   -H "Authorization: Bearer $DASHSCOPE_API_KEY"
 ```
 
@@ -313,7 +315,7 @@ curl -o edited.png "IMAGE_URL_FROM_POLL_RESPONSE"
 ### wan2.5-i2i-preview: Multi-image fusion (async-only)
 
 ```bash
-curl -sS -X POST "https://dashscope-intl.aliyuncs.com/api/v1/services/aigc/image2image/image-synthesis" \
+curl -sS -X POST "https://${QWEN_REGION:-ap-southeast-1}.maas.qwencloudapi.com/api/v1/services/aigc/image2image/image-synthesis" \
   -H "Authorization: Bearer $DASHSCOPE_API_KEY" \
   -H "Content-Type: application/json" \
   -H "X-DashScope-Async: enable" \
@@ -337,7 +339,7 @@ Then poll and download as in the single-image case above.
 **Step 1 — Generate edited image:**
 
 ```bash
-curl -sS -X POST "https://dashscope-intl.aliyuncs.com/api/v1/services/aigc/multimodal-generation/generation" \
+curl -sS -X POST "https://${QWEN_REGION:-ap-southeast-1}.maas.qwencloudapi.com/api/v1/services/aigc/multimodal-generation/generation" \
   -H "Authorization: Bearer $DASHSCOPE_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
@@ -378,7 +380,7 @@ curl -o edited_2.png "IMAGE_URL_2"
 ### qwen-image-2.0-pro: Pure text-to-image (sync)
 
 ```bash
-curl -sS -X POST "https://dashscope-intl.aliyuncs.com/api/v1/services/aigc/multimodal-generation/generation" \
+curl -sS -X POST "https://${QWEN_REGION:-ap-southeast-1}.maas.qwencloudapi.com/api/v1/services/aigc/multimodal-generation/generation" \
   -H "Authorization: Bearer $DASHSCOPE_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
@@ -399,7 +401,7 @@ Extract image URL from `output.choices[0].message.content[0].image`, then downlo
 **Step 1 — Submit task:**
 
 ```bash
-curl -sS -X POST "https://dashscope-intl.aliyuncs.com/api/v1/services/aigc/text2image/image-synthesis" \
+curl -sS -X POST "https://${QWEN_REGION:-ap-southeast-1}.maas.qwencloudapi.com/api/v1/services/aigc/text2image/image-synthesis" \
   -H "Authorization: Bearer $DASHSCOPE_API_KEY" \
   -H "Content-Type: application/json" \
   -H "X-DashScope-Async: enable" \
@@ -417,7 +419,7 @@ Extract `output.task_id` from response.
 **Step 2 — Poll until done** (repeat every 5–10s):
 
 ```bash
-curl -sS "https://dashscope-intl.aliyuncs.com/api/v1/tasks/TASK_ID" \
+curl -sS "https://${QWEN_REGION:-ap-southeast-1}.maas.qwencloudapi.com/api/v1/tasks/TASK_ID" \
   -H "Authorization: Bearer $DASHSCOPE_API_KEY"
 ```
 
@@ -434,7 +436,7 @@ curl -o image.png "IMAGE_URL_FROM_POLL_RESPONSE"
 Do not add `X-DashScope-Async` and do not use the `text2image/image-synthesis` endpoint for this model.
 
 ```bash
-curl -sS -X POST "https://dashscope-intl.aliyuncs.com/api/v1/services/aigc/multimodal-generation/generation" \
+curl -sS -X POST "https://${QWEN_REGION:-ap-southeast-1}.maas.qwencloudapi.com/api/v1/services/aigc/multimodal-generation/generation" \
   -H "Authorization: Bearer $DASHSCOPE_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{

@@ -1,8 +1,8 @@
 # QwenCloud Model Pricing
 
-> Checked: 2026-09-18. Prices are in USD.
+> Checked: 2026-10-20. Prices are in USD.
 >
-> This file records the billing structure published by QwenCloud. The official pricing source no longer exposes a complete model-by-model price table, so unverified model lists and inferred prices are intentionally omitted. For current model availability, use the domain catalogs and the exact Token Plan allowlists.
+> This file records the billing structure published by QwenCloud. For per-model unit prices, use the official [model pricing table](https://docs.qwencloud.com/developer-guides/getting-started/model-prices). For model availability, use the domain catalogs and the exact Token Plan allowlists.
 
 ## PAYG billing units
 
@@ -11,8 +11,8 @@
 | Text generation | Per 1 million tokens | Input and output are priced separately. Some models use input-length tiers. Thinking tokens count as output tokens. |
 | Image generation | Per successfully generated output image; some editing models also charge per input image | Text-to-image has no input-image charge. Input-image billing is model-specific. Output pricing may vary by resolution. Failed images are not charged. |
 | Video generation | Per second | Output video is charged by generated duration. Some models also charge input-video duration. Price may vary by resolution, mode, or aspect ratio. |
-| Text to speech | Per 10,000 input characters | Output is not charged. |
-| Speech to text | Per second of input audio | Output is not charged. Applies to realtime recognition and file transcription. |
+| Text to speech | Usually per 10,000 input characters | Character-billed models have no output charge. `qwen-audio-3.1-tts-flash` instead charges per 1 million tokens: $0.23 input and $1.87 output. |
+| Speech to text | Per second of input audio or per 1 million tokens, depending on model | Duration-billed models do not charge output. Qwen-Audio 3.1 ASR models charge both input and output tokens. |
 | Speech to speech | Per 1 million tokens | Rates differ by modality. Conversation history is billed again as input on later turns. |
 | Embedding and reranking | Per 1 million input tokens | Output is not charged. |
 
@@ -45,18 +45,18 @@ Function calling and MCP have no separate tool fee; their tool descriptions coun
 
 Token Plan uses Credits rather than PAYG billing units. Credits consumed by a request are dynamic and depend on the model type, token usage, thinking mode, and tool calls. The exact supported-model catalogs are maintained in `qwencloud-token-plan-models.md`:
 
-- Individual: 20 models.
-- Team: 27 models, comprising all 20 Individual models plus 7 Team-only models.
+- Individual: 22 models.
+- Team: 31 models, comprising all 22 Individual models plus 9 Team-only models.
 
 ### Individual
 
-| Tier | Standard price | Current promotional price | 7-day limit | Concurrent agents |
+| Tier | Standard price | Current promotional price | Monthly limit | Concurrent agents |
 |------|----------------|---------------------------|-------------|-------------------|
-| Lite | $8/month | $6/month | 2,500 Credits | 1–2 |
-| Essential | $16/month | $10/month | 5,625 Credits | 2–3 |
-| Standard | $25/month | $18/month | 10,000 Credits | 3–4 |
-| Pro | $80/month | $68/month | 40,000 Credits | 6–8 |
-| Credit Pack | — | $15/pack/month | 20,000 Credits/pack; not subject to the 7-day limit | — |
+| Lite | $8/month | $6/month | 11,500 Credits | 1–2 |
+| Essential | $16/month | $10/month | 25,500 Credits | 2–3 |
+| Standard | $25/month | $18/month | 45,000 Credits | 3–4 |
+| Pro | $80/month | $68/month | 180,000 Credits | 6–8 |
+| Credit Pack | — | $15/pack/month | 20,000 additional Credits/pack | — |
 
 ### Team
 

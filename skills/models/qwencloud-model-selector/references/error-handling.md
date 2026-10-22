@@ -1,5 +1,7 @@
 # CLI Error Handling — qwencloud-model-selector
 
+Follow the [Region rules](../SKILL.md#region-rules) before using these URLs or examples. Substitute the resolved Region ID for `${QWEN_REGION}` in CDN links; direct curl/SDK examples use the same region.
+
 When a CLI command fails, **do not silently fall back to CDN/static snapshots**. Classify the error first,
 then apply the matching recovery action. Only fall back after recovery genuinely fails or the user
 explicitly declines.
@@ -19,7 +21,7 @@ explicitly declines.
 | `network-timeout` | Network errors, `ETIMEDOUT`, `ECONNREFUSED`, `socket hang up`, `502/503/504` | Retry once after 2s. If second attempt also fails, inform user and ask whether to retry again or fall back to snapshot. |
 | `rate-limit` | `429`, `rate limit exceeded`, `too many requests` | Inform user; direct them to [Rate Limit Console](https://home.qwencloud.com/settings/monitoring/rate-limit). **Do NOT** auto-fall back — let user decide whether to wait and retry. |
 | `quota-exhausted` | `quota exhausted`, `insufficient balance`, `free tier used up`, `403` on usage | Inform user; direct them to [Billing Console](https://home.qwencloud.com/billing/pay-as-you-go). **Do NOT** fall back to snapshots — snapshots have no quota information, falling back would be misleading. |
-| `permission-denied` | `403 Forbidden` on model/feature, `not subscribed`, or a plan/model mismatch | Fetch the [CDN Token Plan model catalog](https://alioth-intl.alicdn.com/skills-info/models/references/qwencloud-token-plan-models.md). Explain the restriction and suggest only a documented alternative; never probe models or silently switch to PAYG. If CDN access fails, use the [local fallback](../cdn/references/qwencloud-token-plan-models.md). |
+| `permission-denied` | `403 Forbidden` on model/feature, `not subscribed`, or a plan/model mismatch | Fetch the [CDN Token Plan model catalog](https://alioth-intl.alicdn.com/skills-info/${QWEN_REGION}/models/references/qwencloud-token-plan-models.md). Explain the restriction and suggest only a documented alternative; never probe models or silently switch to PAYG. If CDN access fails, use the [local fallback](../cdn/references/qwencloud-token-plan-models.md). |
 | `version-mismatch` | `unsupported flag`, `unknown subcommand`, `please upgrade` | Suggest `qwencloud version --check` or run the update-check skill. After upgrade, retry original command. |
 | `other` | Unrecognized stderr output | Show the raw stderr to the user; link to [official docs](https://docs.qwencloud.com/). Only after the user has seen the error and declined to debug, fall back to snapshot. |
 

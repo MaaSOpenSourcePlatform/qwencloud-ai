@@ -9,6 +9,14 @@ compatibility: "Requires curl for PAYG verification. Cursor: auto-loaded. Claude
 Configure and verify authentication for QwenCloud APIs.
 This skill is part of **qwencloud/qwencloud-ai**.
 
+## Region rules
+
+- Use the Region ID requested for this operation first, then the existing `QWEN_REGION` from the environment or `.env`, then `ap-southeast-1` (Singapore). For a Chinese region name, fetch the root [region map](https://alioth-intl.alicdn.com/skills-info/regions.md) to resolve its ID. If the map is unavailable, an explicit Region ID still works; an unresolved name requires a Region ID, never a silent switch to Singapore.
+- Pass only the Region ID through `QWEN_REGION` when calling Python. Ordinary model requests use `${QWEN_REGION}.maas.qwencloudapi.com`; HTTP, SSE, upload policy, task queries, and WebSocket use that same region and retain their protocol paths. Replace `${QWEN_REGION}` in CDN URLs with the selected ID before fetching; the manifest is `https://alioth-intl.alicdn.com/skills-info/${QWEN_REGION}/manifest.json`.
+- Token Plan keeps its dedicated endpoint and credential logic. Preserve the advanced `QWEN_BASE_URL` override; legacy `QWEN_REGION=none` with a custom base URL uses the `ap-southeast-1` model CDN directory. CLI commands and arguments are unchanged.
+- Regional CDN catalogs are temporary copies, pending regional model, pricing, and source verification. If the CDN is unavailable, use the bundled local snapshot as the Singapore default fallback; its source region is still unverified. A catalog fallback never changes the selected inference region.
+- Keep each asynchronous task's submission region with its task ID. Use that same `QWEN_REGION` for polling and recovery, even if the current default has changed.
+
 ## Skill directory
 
 Use this skill's internal files for learning. Load references only when the user needs console or documentation links.
@@ -49,10 +57,13 @@ Credentials are loaded in the following order (first match wins):
 |---------------------|-------------------------------------------------------------------------------------------------------------------------------------------|
 | `DASHSCOPE_API_KEY` | API key (required)                                                                                                                        |
 | `QWEN_API_KEY`      | Alias for `DASHSCOPE_API_KEY`. If both are set, `QWEN_API_KEY` takes priority.                                                            |
+| `QWEN_REGION` | Ordinary-model Region ID; default `ap-southeast-1`. Resolve Chinese names with the CDN region map above. |
 | `QWEN_BASE_URL`     | Override default endpoint (optional; for custom deployments)                                                                              |
 | `QWEN_TMP_OSS_BUCKET` | Custom OSS bucket for file uploads (replaces 48h temp storage). See [custom-oss.md](references/custom-oss.md).                         |
 | `QWEN_TMP_OSS_REGION` | OSS region (required when `QWEN_TMP_OSS_BUCKET` is set).                                                                              |
 | `QWEN_TMP_OSS_AK_ID` / `AK_SECRET` | OSS credentials (use RAM user with least-privilege: `oss:PutObject` + `oss:GetObject`). Falls back to `OSS_ACCESS_KEY_ID` / `OSS_ACCESS_KEY_SECRET` if not set. |
+
+Supported ordinary-model Region IDs are `ap-southeast-1`, `us-east-1`, `cn-beijing`, `eu-central-1`, `cn-hongkong`, and `ap-northeast-1`. Do not set `QWEN_REGION` to a hostname, URL, or path. The centralized `maas.qwencloudapi.com` hostname represents Singapore; the default here still uses `ap-southeast-1.maas.qwencloudapi.com` and its regional CDN directory.
 
 ## API Key Types
 
@@ -60,11 +71,11 @@ QwenCloud has three mutually exclusive key/plan types:
 
 | Key Type | Format | Purpose | Endpoint |
 |----------|--------|---------|----------|
-| **Standard (Pay-as-you-go)** | `sk-xxxxx` | API calls from scripts, apps, and tools | `dashscope-intl.aliyuncs.com` |
+| **Standard (Pay-as-you-go)** | `sk-xxxxx` | API calls from scripts, apps, and tools | `${QWEN_REGION}.maas.qwencloudapi.com` |
 | **Token Plan** | `sk-sp-xxxxx` | Interactive AI tools with User-Agent header | `token-plan.ap-southeast-1.maas.aliyuncs.com` |
 | **Coding Plan** | `sk-sp-xxxxx` | Interactive AI coding tools only (Cursor, Claude Code, Qwen Code) | `coding-intl.dashscope.aliyuncs.com` |
 
-All qwencloud/qwencloud-ai scripts require a **standard** key (`sk-`). Coding Plan keys (`sk-sp-`) produce `401 invalid_api_key` on standard endpoints. Token Plan keys (`sk-sp-`) are auto-routed to the Token Plan endpoint by scripts. Before a Token Plan request, fetch and read the current [Token Plan model catalog](https://alioth-intl.alicdn.com/skills-info/models/references/qwencloud-token-plan-models.md) and pass an exact listed model; if CDN access fails, use the [local fallback](cdn/references/qwencloud-token-plan-models.md). Coding Plan details remain in [codingplan.md](references/codingplan.md).
+All qwencloud/qwencloud-ai scripts require a **standard** key (`sk-`). Coding Plan keys (`sk-sp-`) produce `401 invalid_api_key` on standard endpoints. Token Plan keys (`sk-sp-`) are auto-routed to the Token Plan endpoint by scripts. Before a Token Plan request, fetch and read the current [Token Plan model catalog](https://alioth-intl.alicdn.com/skills-info/${QWEN_REGION}/models/references/qwencloud-token-plan-models.md) and pass an exact listed model; if CDN access fails, use the [local fallback](cdn/references/qwencloud-token-plan-models.md). Coding Plan details remain in [codingplan.md](references/codingplan.md).
 
 If the user's key starts with `sk-sp-`, first check [tokenplan.md](references/tokenplan.md) for Token Plan details and the CDN catalog above for model coverage, then [codingplan.md](references/codingplan.md) for Coding Plan specifics. Guide them to obtain a standard key from the console below if needed for models outside their plan.
 
@@ -121,7 +132,7 @@ Unless explicitly stated otherwise, any script or task mentioned in this skill r
 **PAYG only:** Test authentication with a simple curl request. **Token Plan: do not use curl; verify with the target skill's bundled Python script.**
 
 ```bash
-curl -sS -X POST "https://dashscope-intl.aliyuncs.com/compatible-mode/v1/chat/completions" \
+curl -sS -X POST "https://${QWEN_REGION:-ap-southeast-1}.maas.qwencloudapi.com/compatible-mode/v1/chat/completions" \
   -H "Authorization: Bearer $DASHSCOPE_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{"model":"qwen-turbo","messages":[{"role":"user","content":"Hi"}]}'
@@ -144,7 +155,7 @@ For PAYG, send a lightweight request to verify authentication. In Token Plan mod
 
 ```bash
 curl -sS -o /dev/null -w "%{http_code}" \
-  -X POST "https://dashscope-intl.aliyuncs.com/compatible-mode/v1/chat/completions" \
+  -X POST "https://${QWEN_REGION:-ap-southeast-1}.maas.qwencloudapi.com/compatible-mode/v1/chat/completions" \
   -H "Authorization: Bearer $DASHSCOPE_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{"model":"qwen-turbo","messages":[{"role":"user","content":"hi"}]}'

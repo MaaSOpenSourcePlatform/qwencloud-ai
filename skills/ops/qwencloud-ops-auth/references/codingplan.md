@@ -1,5 +1,7 @@
 # Coding Plan vs Standard API Key
 
+Follow the [Region rules](../SKILL.md#region-rules) before using these URLs or examples. Substitute the resolved Region ID for `${QWEN_REGION}` in CDN links; direct curl/SDK examples use the same region.
+
 > Sources:
 > - https://docs.qwencloud.com/coding-plan/overview
 > Updated: 2026-08-29
@@ -11,9 +13,9 @@ Alibaba Cloud Model Studio has two mutually exclusive authentication systems. Mi
 | Dimension | Standard Key (Pay-as-you-go) | Coding Plan |
 |-----------|------------------------------|-------------|
 | Key format | `sk-xxxxx` | `sk-sp-xxxxx` |
-| OpenAI-compatible URL | `dashscope-intl.aliyuncs.com/compatible-mode/v1` | `coding-intl.dashscope.aliyuncs.com/v1` |
+| OpenAI-compatible URL | `${QWEN_REGION}.maas.qwencloudapi.com/compatible-mode/v1` | `coding-intl.dashscope.aliyuncs.com/v1` |
 | Anthropic-compatible URL | N/A | `coding-intl.dashscope.aliyuncs.com/apps/anthropic` |
-| Native DashScope URL | `dashscope-intl.aliyuncs.com/api/v1` | **Not supported** |
+| Native DashScope URL | `${QWEN_REGION}.maas.qwencloudapi.com/api/v1` | **Not supported** |
 | Supported models | Full catalog (100+ across text, vision, image, video, audio) | 7 text models (see below) |
 | Usage scope | Any API call (scripts, apps, tools) | **Coding tools only** (Cursor, Claude Code, Qwen Code, etc.) |
 | Billing | Per-token consumption | Monthly subscription |
@@ -36,9 +38,9 @@ Alibaba Cloud Model Studio has two mutually exclusive authentication systems. Mi
 
 | Key Type | Base URL | Result |
 |----------|----------|--------|
-| `sk-` | `dashscope-intl.aliyuncs.com/...` | OK |
+| `sk-` | `${QWEN_REGION}.maas.qwencloudapi.com/...` | OK |
 | `sk-` | `coding-intl.dashscope.aliyuncs.com/...` | **401** — regular key rejected |
-| `sk-sp-` | `dashscope-intl.aliyuncs.com/...` | **401** — Coding Plan key rejected |
+| `sk-sp-` | `${QWEN_REGION}.maas.qwencloudapi.com/...` | **401** — Coding Plan key rejected |
 | `sk-sp-` | `coding-intl.dashscope.aliyuncs.com/...` | **Agent context required** — rejects non-agent scripts |
 | `sk-sp-` | `token-plan.ap-southeast-1.maas.aliyuncs.com/...` | OK (scripts auto-route) |
 

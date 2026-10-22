@@ -70,8 +70,8 @@ _MODEL_CONFIG_DIR = Path(__file__).resolve().parent.parent / "cdn" / "config"
 # The WebSocket endpoint is derived at runtime from the shared native base
 # URL (see qwencloud_lib), so a custom QWEN_BASE_URL override and Token Plan
 # routing apply to the WebSocket path automatically. With no override,
-# native_base_url() defaults to https://dashscope-intl.aliyuncs.com/api/v1,
-# resolving to wss://dashscope-intl.aliyuncs.com/api-ws/v1/inference.
+# native_base_url() uses QWEN_REGION (Singapore by default), resolving to
+# wss://ap-southeast-1.maas.qwencloudapi.com/api-ws/v1/inference by default.
 _WEBSOCKET_PATH = "/api-ws/v1/inference"
 
 def _validate_model_config(config: dict[str, Any]) -> bool:

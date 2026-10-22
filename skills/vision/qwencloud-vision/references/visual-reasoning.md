@@ -1,5 +1,7 @@
 # Visual Reasoning Guide
 
+Follow the [Region rules](../SKILL.md#region-rules) before using these URLs or examples. Substitute the resolved Region ID for `${QWEN_REGION}` in CDN links; direct curl/SDK examples use the same region.
+
 > **Content validity**: 2026-04 | **Source**: [Visual Reasoning](https://docs.qwencloud.com/developer-guides/text-generation/thinking)
 
 ---
@@ -12,7 +14,7 @@ Visual reasoning models output their thinking process before the final answer. S
 
 ## Model Types
 
-Fetch and read the current [QwenCloud vision model catalog](https://alioth-intl.alicdn.com/skills-info/models/references/qwencloud-vision-models.md) for thinking-only and hybrid-thinking model lists, defaults, and compatibility. If CDN access fails, use the [local fallback](../cdn/references/qwencloud-vision-models.md). Preserve a user-specified model and thinking setting.
+Fetch and read the current [QwenCloud vision model catalog](https://alioth-intl.alicdn.com/skills-info/${QWEN_REGION}/models/references/qwencloud-vision-models.md) for thinking-only and hybrid-thinking model lists, defaults, and compatibility. If CDN access fails, use the [local fallback](../cdn/references/qwencloud-vision-models.md). Preserve a user-specified model and thinking setting.
 
 Rules that must not be inferred from the catalog: `qvq-max` is thinking-only
 and streaming-only. The current open-source vision thinking model,
@@ -51,9 +53,11 @@ The delta contains two separate fields:
 from openai import OpenAI
 import os
 
+QWEN_REGION = os.getenv("QWEN_REGION", "ap-southeast-1").strip().lower() or "ap-southeast-1"
+
 client = OpenAI(
     api_key=os.getenv("DASHSCOPE_API_KEY"),
-    base_url="https://dashscope-intl.aliyuncs.com/compatible-mode/v1",
+    base_url=f"https://{QWEN_REGION}.maas.qwencloudapi.com/compatible-mode/v1",
 )
 
 completion = client.chat.completions.create(

@@ -1,6 +1,8 @@
 # Request Fields by Mode
 
-Detailed field tables for each video generation mode. Fetch and read the [CDN model catalog](https://alioth-intl.alicdn.com/skills-info/models/references/qwencloud-video-generation-models.md) for mode-to-model recommendations, supported models, defaults, and model-specific field differences. Unless a model family is named explicitly, the tables below describe the legacy Wan 2.5/2.6 request shape. These fields are passed in the `input` and `parameters` sections of the API request. If CDN access fails, use the [local fallback](../cdn/references/qwencloud-video-generation-models.md).
+Follow the [Region rules](../SKILL.md#region-rules) before using these URLs or examples. Substitute the resolved Region ID for `${QWEN_REGION}` in CDN links; direct curl/SDK examples use the same region.
+
+Detailed field tables for each video generation mode. Fetch and read the [CDN model catalog](https://alioth-intl.alicdn.com/skills-info/${QWEN_REGION}/models/references/qwencloud-video-generation-models.md) for mode-to-model recommendations, supported models, defaults, and model-specific field differences. Unless a model family is named explicitly, the tables below describe the legacy Wan 2.5/2.6 request shape. These fields are passed in the `input` and `parameters` sections of the API request. If CDN access fails, use the [local fallback](../cdn/references/qwencloud-video-generation-models.md).
 
 ## t2v (Text-to-Video, legacy Wan 2.5/2.6 shape)
 

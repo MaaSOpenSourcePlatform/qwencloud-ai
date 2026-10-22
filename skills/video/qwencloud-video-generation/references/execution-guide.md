@@ -1,5 +1,7 @@
 # Qwen Video Generation — Execution Guide
 
+Follow the [Region rules](../SKILL.md#region-rules) before using these URLs or examples. Substitute the resolved Region ID for `${QWEN_REGION}` in CDN links; ordinary curl/SDK examples use the same region. Save the submission `QWEN_REGION` with every asynchronous task ID and restore it before polling or recovery.
+
 Fallback paths when the bundled script (Path 1) fails or is unavailable.
 
 ## Path 0 · Environment Fix
@@ -22,7 +24,7 @@ All video generation is **asynchronous**: submit a task, get a `task_id`, then p
 **t2v example:**
 
 ```bash
-curl -sS -X POST "https://dashscope-intl.aliyuncs.com/api/v1/services/aigc/video-generation/video-synthesis" \
+curl -sS -X POST "https://${QWEN_REGION:-ap-southeast-1}.maas.qwencloudapi.com/api/v1/services/aigc/video-generation/video-synthesis" \
   -H "Authorization: Bearer $DASHSCOPE_API_KEY" \
   -H "Content-Type: application/json" \
   -H "X-DashScope-Async: enable" \
@@ -43,7 +45,7 @@ Extract `output.task_id` from the response.
 **kf2v — different endpoint:**
 
 ```bash
-curl -sS -X POST "https://dashscope-intl.aliyuncs.com/api/v1/services/aigc/image2video/video-synthesis" \
+curl -sS -X POST "https://${QWEN_REGION:-ap-southeast-1}.maas.qwencloudapi.com/api/v1/services/aigc/image2video/video-synthesis" \
   -H "Authorization: Bearer $DASHSCOPE_API_KEY" \
   -H "Content-Type: application/json" \
   -H "X-DashScope-Async: enable" \
@@ -80,7 +82,7 @@ vace (image_reference):
 ### Step 2 — Poll until done (repeat every 10–15s)
 
 ```bash
-curl -sS "https://dashscope-intl.aliyuncs.com/api/v1/tasks/TASK_ID" \
+curl -sS "https://${QWEN_REGION:-ap-southeast-1}.maas.qwencloudapi.com/api/v1/tasks/TASK_ID" \
   -H "Authorization: Bearer $DASHSCOPE_API_KEY"
 ```
 
@@ -104,7 +106,7 @@ curl -o video.mp4 "VIDEO_URL_FROM_POLL_RESPONSE"
 
 | Region | Base URL |
 |--------|----------|
-| Singapore (default) | `https://dashscope-intl.aliyuncs.com/api/v1` |
+| Selected `QWEN_REGION` (default: `ap-southeast-1`) | `https://${QWEN_REGION}.maas.qwencloudapi.com/api/v1` |
 
 For **local file inputs**, use Script Execution (Path 1) — the script auto-uploads to DashScope temp storage.
 

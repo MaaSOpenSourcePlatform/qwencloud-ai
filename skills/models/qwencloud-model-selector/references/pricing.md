@@ -1,8 +1,10 @@
 # QwenCloud Model Pricing
 
+Follow the [Region rules](../SKILL.md#region-rules) before using these URLs or examples. Substitute the resolved Region ID for `${QWEN_REGION}` in CDN links; direct curl/SDK examples use the same region.
+
 > **Source**: [Official pricing page](https://docs.qwencloud.com/developer-guides/getting-started/pricing) — check for the latest rates.
 >
-> **Important**: This file provides stable billing guidance. Model lists and model-specific billing information are in the [CDN model-pricing reference](https://alioth-intl.alicdn.com/skills-info/models/references/qwencloud-model-pricing.md). Specific prices, free quota amounts, and availability are subject to change without notice. Always refer to the official pricing page for authoritative, up-to-date pricing data. If CDN access fails, use the [local fallback](../cdn/references/qwencloud-model-pricing.md).
+> **Important**: This file provides stable billing guidance. Model lists and model-specific billing information are in the [CDN model-pricing reference](https://alioth-intl.alicdn.com/skills-info/${QWEN_REGION}/models/references/qwencloud-model-pricing.md). Specific prices, free quota amounts, and availability are subject to change without notice. Always refer to the official pricing page for authoritative, up-to-date pricing data. If CDN access fails, use the [local fallback](../cdn/references/qwencloud-model-pricing.md).
 >
 > All prices in **USD**.
 
@@ -63,7 +65,7 @@
 
 ### Token Plan (Credits billing)
 
-Token Plan uses a unified Credits system across text, vision, image, video, and audio models. Fetch the [CDN Token Plan model catalog](https://alioth-intl.alicdn.com/skills-info/models/references/qwencloud-token-plan-models.md) for the current snapshot; if CDN access fails, use the [local fallback](../cdn/references/qwencloud-token-plan-models.md). See [Token Plan pricing](https://www.qwencloud.com/pricing/token-plan) for current rates.
+Token Plan uses a unified Credits system across text, vision, image, video, and audio models. Fetch the [CDN Token Plan model catalog](https://alioth-intl.alicdn.com/skills-info/${QWEN_REGION}/models/references/qwencloud-token-plan-models.md) for the current snapshot; if CDN access fails, use the [local fallback](../cdn/references/qwencloud-token-plan-models.md). See [Token Plan pricing](https://www.qwencloud.com/pricing/token-plan) for current rates.
 
 - **Personal / Team model availability**: use the CDN catalog; Team includes the documented Personal set plus Team-only additions
 - **Base URL**: `token-plan.ap-southeast-1.maas.aliyuncs.com`

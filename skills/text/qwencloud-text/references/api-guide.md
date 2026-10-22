@@ -1,5 +1,7 @@
 # Qwen Text Chat — API Supplementary Guide
 
+Follow the [Region rules](../SKILL.md#region-rules) before using these URLs or examples. Substitute the resolved Region ID for `${QWEN_REGION}` in CDN links; direct curl/SDK examples use the same region.
+
 > **Content validity**: 2026-04 | **Sources**: [OpenAI compatibility](https://docs.qwencloud.com/api-reference/preparation/install-sdk) · [Qwen API](https://docs.qwencloud.com/api-reference/chat/dashscope) · [Function calling](https://docs.qwencloud.com/developer-guides/text-generation/function-calling) · [Models](https://www.qwencloud.com/models)
 
 ---
@@ -12,7 +14,7 @@ Qwen text generation models accessed through an **OpenAI-compatible** interface.
 
 ## Use Cases
 
-Fetch and read the current [QwenCloud text model catalog](https://alioth-intl.alicdn.com/skills-info/models/references/qwencloud-text-models.md) for recent Qwen general-purpose model recommendations, defaults, and basic model information. Use qwencloud-model-selector or the QwenCloud CLI for coding, translation, or third-party families. If CDN access fails, use the [local fallback](../cdn/references/qwencloud-text-models.md). These recommendations apply only when the user has not specified a model; preserve any explicit model or parameter choice.
+Fetch and read the current [QwenCloud text model catalog](https://alioth-intl.alicdn.com/skills-info/${QWEN_REGION}/models/references/qwencloud-text-models.md) for recent Qwen general-purpose model recommendations, defaults, and basic model information. Use qwencloud-model-selector or the QwenCloud CLI for coding, translation, or third-party families. If CDN access fails, use the [local fallback](../cdn/references/qwencloud-text-models.md). These recommendations apply only when the user has not specified a model; preserve any explicit model or parameter choice.
 
 ---
 
@@ -22,7 +24,7 @@ Fetch and read the current [QwenCloud text model catalog](https://alioth-intl.al
 
 | Region | base_url |
 |--------|----------|
-| Singapore (default) | `https://dashscope-intl.aliyuncs.com/compatible-mode/v1` |
+| Selected `QWEN_REGION` (default: `ap-southeast-1`) | `https://${QWEN_REGION}.maas.qwencloudapi.com/compatible-mode/v1` |
 
 ### Non-streaming Call
 
@@ -30,9 +32,11 @@ Fetch and read the current [QwenCloud text model catalog](https://alioth-intl.al
 from openai import OpenAI
 import os
 
+QWEN_REGION = os.getenv("QWEN_REGION", "ap-southeast-1").strip().lower() or "ap-southeast-1"
+
 client = OpenAI(
     api_key=os.getenv("DASHSCOPE_API_KEY"),
-    base_url="https://dashscope-intl.aliyuncs.com/compatible-mode/v1",
+    base_url=f"https://{QWEN_REGION}.maas.qwencloudapi.com/compatible-mode/v1",
 )
 resp = client.chat.completions.create(
     model="qwen3.6-plus",
@@ -138,7 +142,7 @@ resp = client.chat.completions.create(
 ## Important Notes
 
 1. **Prefer streaming.** Non-streaming blocks until the full response is generated (10–60s+ for long outputs). Always use `stream=True` for interactive scenarios.
-2. **API keys are region-specific.** Use the `ap-southeast-1` (Singapore) endpoint with your API key.
+2. **API keys are region-specific.** Use an API key valid for the selected `QWEN_REGION`; Singapore (`ap-southeast-1`) is the default only when no region is configured.
 3. **openai SDK version:** Requires ≥1.55.0. Older versions conflict with httpx ≥0.28, causing a `proxies` TypeError.
 4. **Thinking mode varies by model.** Fetch the CDN model catalog linked above for current defaults. Only override with `enable_thinking` when the user explicitly asks to change the default.
 5. **Function calling constraints.** `tools` cannot be used with `stream=True` (older limitation; some newer models support it). Also incompatible with `n > 1`.

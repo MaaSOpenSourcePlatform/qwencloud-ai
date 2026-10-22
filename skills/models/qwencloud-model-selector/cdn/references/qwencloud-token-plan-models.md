@@ -1,6 +1,6 @@
 # QwenCloud Token Plan Models
 
-> Catalog checked: 2026-09-18. The tables are exact-string allowlists from the official Individual and Team overview pages. Only models released on or after 2025-08-01 are included.
+> Catalog checked: 2026-10-20. The tables use exact model IDs from the official Individual and Team allowlists, filtered to models released after 2025-09-01. The `auto` router is excluded because its underlying model version is not fixed.
 
 ## Billing and access scope
 
@@ -11,9 +11,9 @@
 | Protocol compatibility | Model/API-specific | OpenAI/Anthropic compatibility for chat-capable models; dedicated native or WebSocket endpoints for image, video, and audio models |
 | Intended use | API usage | Interactive use in compatible AI programming and agent tools |
 
-Token Plan publishes these Singapore endpoints: OpenAI-compatible `https://token-plan.ap-southeast-1.maas.aliyuncs.com/compatible-mode/v1`, Anthropic-compatible `https://token-plan.ap-southeast-1.maas.aliyuncs.com/apps/anthropic`, native multimodal `https://token-plan.ap-southeast-1.maas.aliyuncs.com/api/v1`, and TTS WebSocket `wss://token-plan.ap-southeast-1.maas.aliyuncs.com/api-ws/v1/inference`. Obtain the API key from the QwenCloud console and honor a console-provided Base URL override if it differs.
+Token Plan publishes these endpoints: OpenAI-compatible `https://token-plan.maas.qwencloudapi.com/compatible-mode/v1`, Anthropic-compatible `https://token-plan.maas.qwencloudapi.com/apps/anthropic`, and native multimodal `https://token-plan.maas.qwencloudapi.com/api/v1`. The native TTS endpoint is `/services/audio/tts/SpeechSynthesizer`; other speech protocols must match the selected model's current Token Plan API. Obtain the API key from the QwenCloud console and honor a console-provided Base URL override if it differs.
 
-## Token Plan Individual (20 models)
+## Token Plan Individual (22 models)
 
 | Brand | Model ID | Capability |
 |-------|----------|------------|
@@ -32,25 +32,29 @@ Token Plan publishes these Singapore endpoints: OpenAI-compatible `https://token
 | DeepSeek | `deepseek-v4-pro-0813` | Reasoning, text generation |
 | DeepSeek | `deepseek-v4-flash-0731` | Reasoning, text generation |
 | DeepSeek | `deepseek-v4.1-flash` | Reasoning, visual understanding, text generation |
+| DeepSeek | `deepseek-v4.1-flash-1017` | Reasoning, visual understanding, text generation |
 | Wan | `wan2.7-image` | Image generation |
 | Wan | `wan2.7-image-pro` | Image generation |
+| Wan | `wan3.0-video` | Video generation |
 | HappyHorse | `happyhorse-1.1-i2v` | Video generation |
 | HappyHorse | `happyhorse-1.1-t2v` | Video generation |
 | HappyHorse | `happyhorse-1.1-r2v` | Video generation |
 
-## Token Plan Team (27 models)
+## Token Plan Team (31 models)
 
-Team includes all 20 Individual models and these 7 additional models:
+Team includes all 22 Individual models and these 9 additional models:
 
 | Brand | Model ID | Capability |
 |-------|----------|------------|
 | Qwen | `qwen3.6-plus` | Reasoning, visual understanding, text generation |
 | Qwen | `qwen-image-2.0` | Image generation |
 | Qwen | `qwen-image-2.0-pro` | Image generation |
-| DeepSeek | `deepseek-v4-flash` | Reasoning, text generation |
-| DeepSeek | `deepseek-v3.2` | Reasoning, text generation |
 | Moonshot AI | `kimi-k2.7-code` | Reasoning, visual understanding, text generation |
+| Moonshot AI | `kimi-k2.6` | Reasoning, visual understanding, text generation |
+| Moonshot AI | `kimi-k2.5` | Reasoning, visual understanding, text generation |
 | Zhipu AI | `glm-5.1` | Reasoning, text generation |
+| Zhipu AI | `glm-5` | Reasoning, text generation |
+| MiniMax | `MiniMax-M2.5` | Reasoning, text generation |
 
 ## Audio capabilities
 
@@ -63,15 +67,15 @@ Team includes all 20 Individual models and these 7 additional models:
 
 ### Individual
 
-| Tier | Standard price | Current promotional price | 7-day limit | Concurrent agents |
+| Tier | Standard price | Current promotional price | Monthly quota | Concurrent agents |
 |------|----------------|---------------------------|-------------|-------------------|
-| Lite | $8/month | $6/month | 2,500 Credits | 1–2 |
-| Essential | $16/month | $10/month | 5,625 Credits | 2–3 |
-| Standard | $25/month | $18/month | 10,000 Credits | 3–4 |
-| Pro | $80/month | $68/month | 40,000 Credits | 6–8 |
-| Credit Pack | — | $15/pack/month | 20,000 Credits/pack; not subject to the 7-day limit | — |
+| Lite | $8/month | $6/month | 11,500 Credits | 1–2 |
+| Essential | $16/month | $10/month | 25,500 Credits | 2–3 |
+| Standard | $25/month | $18/month | 45,000 Credits | 3–4 |
+| Pro | $80/month | $68/month | 180,000 Credits | 6–8 |
+| Credit Pack | — | $15/pack/month | 20,000 Credits/pack; not subject to plan quota limits | — |
 
-Credit Packs require an active Individual subscription, and an account may hold up to five at a time.
+Quotas reset each 30-day subscription cycle; unused quota does not carry over. Credit Packs require an active Individual subscription, and an account may hold up to five at a time. After the monthly quota is exhausted, Credit Pack Credits are deducted automatically; service pauses when both are exhausted.
 
 ### Team
 

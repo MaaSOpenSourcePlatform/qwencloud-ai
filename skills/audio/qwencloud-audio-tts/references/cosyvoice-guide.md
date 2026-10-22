@@ -1,10 +1,12 @@
 # CosyVoice TTS Guide
 
+Follow the [Region rules](../SKILL.md#region-rules) before using these URLs or examples. Substitute the resolved Region ID for `${QWEN_REGION}` in CDN links; direct curl/SDK examples use the same region.
+
 CosyVoice models use **WebSocket API** (not HTTP REST), requiring the DashScope SDK.
 
 ## Models
 
-Fetch and read the current [QwenCloud audio TTS model catalog](https://alioth-intl.alicdn.com/skills-info/models/references/qwencloud-audio-tts-models.md) for the CosyVoice model list, defaults, instruction support, and voice compatibility. If CDN access fails, use the [local fallback](../cdn/references/qwencloud-audio-tts-models.md).
+Fetch and read the current [QwenCloud audio TTS model catalog](https://alioth-intl.alicdn.com/skills-info/${QWEN_REGION}/models/references/qwencloud-audio-tts-models.md) for the CosyVoice model list, defaults, instruction support, and voice compatibility. If CDN access fails, use the [local fallback](../cdn/references/qwencloud-audio-tts-models.md).
 
 ## Prerequisites
 
@@ -16,9 +18,21 @@ Fetch and read the current [QwenCloud audio TTS model catalog](https://alioth-in
   ```
 - **API Key**: Same as Qwen TTS (`DASHSCOPE_API_KEY` or `QWEN_API_KEY`) — must be a **standard PAYG key** (`sk-...`); Token Plan keys are rejected (see below)
 
+For ordinary PAYG requests, the bundled script derives `wss://${QWEN_REGION}.maas.qwencloudapi.com/api-ws/v1/inference` from the selected Region ID. A direct SDK setup uses the same setting:
+
+```python
+import os
+import dashscope
+
+QWEN_REGION = os.getenv("QWEN_REGION", "ap-southeast-1").strip().lower() or "ap-southeast-1"
+dashscope.base_websocket_api_url = (
+    f"wss://{QWEN_REGION}.maas.qwencloudapi.com/api-ws/v1/inference"
+)
+```
+
 ## Token Plan Compatibility
 
-Fetch and read the current [Token Plan model catalog](https://alioth-intl.alicdn.com/skills-info/models/references/qwencloud-token-plan-models.md) before selecting a model. If CDN access fails, use the [local fallback](../cdn/references/qwencloud-token-plan-models.md).
+Fetch and read the current [Token Plan model catalog](https://alioth-intl.alicdn.com/skills-info/${QWEN_REGION}/models/references/qwencloud-token-plan-models.md) before selecting a model. If CDN access fails, use the [local fallback](../cdn/references/qwencloud-token-plan-models.md).
 
 The bundled `tts_cosyvoice.py` currently rejects Token Plan keys (`sk-sp-...`) and exits immediately with:
 
@@ -50,7 +64,7 @@ python3 scripts/tts_cosyvoice.py --text "Hello, world!"
 
 ## Available Voices
 
-Fetch the CDN model catalog linked above for the current verified voices, descriptions, defaults, and
+Fetch the CDN model catalog linked above for the currently listed voices, descriptions, defaults, and
 model compatibility. See the [official voice list](https://docs.qwencloud.com/api-reference/speech-synthesis/voice-list)
 for the authoritative full catalog.
 
@@ -96,4 +110,4 @@ python3 scripts/tts_cosyvoice.py -t "Second sentence" -o output/qwencloud-audio-
 
 ## Character Counting & Billing
 
-CosyVoice models are billed per character. Fetch the [CDN model-pricing reference](https://alioth-intl.alicdn.com/skills-info/models/references/qwencloud-model-pricing.md) for the current model list and billing units. If CDN access fails, use the [local fallback](../cdn/references/qwencloud-model-pricing.md).
+CosyVoice models are billed per character. Fetch the [CDN model-pricing reference](https://alioth-intl.alicdn.com/skills-info/${QWEN_REGION}/models/references/qwencloud-model-pricing.md) for the current model list and billing units. If CDN access fails, use the [local fallback](../cdn/references/qwencloud-model-pricing.md).

@@ -1,5 +1,7 @@
 # Qwen Audio TTS — API Supplementary Guide
 
+Follow the [Region rules](../SKILL.md#region-rules) before using these URLs or examples. Substitute the resolved Region ID for `${QWEN_REGION}` in CDN links; direct curl/SDK examples use the same region.
+
 > **Content validity**: 2026-03 | **Sources**: [TTS API](https://docs.qwencloud.com/api-reference/speech-synthesis/qwen-tts) · [TTS Guide](https://docs.qwencloud.com/developer-guides/speech/tts) · [Voice List](https://docs.qwencloud.com/api-reference/speech-synthesis/voice-list)
 
 ---
@@ -19,7 +21,7 @@ Text-to-speech synthesis service that produces natural, human-like voices. Suppo
 >
 > The model guidance below applies **only when the user has NOT specified a model**.
 
-Fetch and read the current [QwenCloud audio TTS model catalog](https://alioth-intl.alicdn.com/skills-info/models/references/qwencloud-audio-tts-models.md) for scenario recommendations, defaults, compatibility, and basic model information. If CDN access fails, use the [local fallback](../cdn/references/qwencloud-audio-tts-models.md).
+Fetch and read the current [QwenCloud audio TTS model catalog](https://alioth-intl.alicdn.com/skills-info/${QWEN_REGION}/models/references/qwencloud-audio-tts-models.md) for scenario recommendations, defaults, compatibility, and basic model information. If CDN access fails, use the [local fallback](../cdn/references/qwencloud-audio-tts-models.md).
 
 ---
 
@@ -30,7 +32,9 @@ Fetch and read the current [QwenCloud audio TTS model catalog](https://alioth-in
 ```python
 import os, dashscope
 
-dashscope.base_http_api_url = 'https://dashscope-intl.aliyuncs.com/api/v1'
+QWEN_REGION = os.getenv("QWEN_REGION", "ap-southeast-1").strip().lower() or "ap-southeast-1"
+
+dashscope.base_http_api_url = f'https://{QWEN_REGION}.maas.qwencloudapi.com/api/v1'
 
 resp = dashscope.MultiModalConversation.call(
     model="qwen3-tts-flash",
@@ -82,10 +86,16 @@ and model compatibility.
 ### Voice Cloning (quick example)
 
 ```python
+import os
 import requests
+import dashscope
+
+QWEN_REGION = os.getenv("QWEN_REGION", "ap-southeast-1").strip().lower() or "ap-southeast-1"
+
+dashscope.base_http_api_url = f"https://{QWEN_REGION}.maas.qwencloudapi.com/api/v1"
 
 # Step 1: Upload audio sample and create a voice
-url = "https://dashscope-intl.aliyuncs.com/api/v1/services/audio/tts/customization"
+url = f"https://{QWEN_REGION}.maas.qwencloudapi.com/api/v1/services/audio/tts/customization"
 resp = requests.post(url,
     headers={"Authorization": f"Bearer {os.getenv('DASHSCOPE_API_KEY')}"},
     files={"file": open("voice_sample.mp3", "rb")},

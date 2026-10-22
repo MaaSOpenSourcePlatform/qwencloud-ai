@@ -9,6 +9,14 @@ compatibility: "Requires Python 3.9+; curl is PAYG-only. Cursor: auto-loaded. Cl
 Generate text, conduct conversations, write code, and invoke tools using Qwen models through the OpenAI-compatible API.
 This skill is part of **qwencloud/qwencloud-ai**.
 
+## Region rules
+
+- Use the Region ID requested for this operation first, then the existing `QWEN_REGION` from the environment or `.env`, then `ap-southeast-1` (Singapore). For a Chinese region name, fetch the root [region map](https://alioth-intl.alicdn.com/skills-info/regions.md) to resolve its ID. If the map is unavailable, an explicit Region ID still works; an unresolved name requires a Region ID, never a silent switch to Singapore.
+- Pass only the Region ID through `QWEN_REGION` when calling Python. Ordinary model requests use `${QWEN_REGION}.maas.qwencloudapi.com`; HTTP, SSE, upload policy, task queries, and WebSocket use that same region and retain their protocol paths. Replace `${QWEN_REGION}` in CDN URLs with the selected ID before fetching; the manifest is `https://alioth-intl.alicdn.com/skills-info/${QWEN_REGION}/manifest.json`.
+- Token Plan keeps its dedicated endpoint and credential logic. Preserve the advanced `QWEN_BASE_URL` override; legacy `QWEN_REGION=none` with a custom base URL uses the `ap-southeast-1` model CDN directory. CLI commands and arguments are unchanged.
+- Regional CDN catalogs are temporary copies, pending regional model, pricing, and source verification. If the CDN is unavailable, use the bundled local snapshot as the Singapore default fallback; its source region is still unverified. A catalog fallback never changes the selected inference region.
+- Keep each asynchronous task's submission region with its task ID. Use that same `QWEN_REGION` for polling and recovery, even if the current default has changed.
+
 ## Skill directory
 
 Use this skill's internal files to execute and learn. Load reference files on demand when the default path fails or you
@@ -34,7 +42,7 @@ files that may contain secrets.
 
 ## Key Compatibility
 
-Scripts support both **standard QwenCloud API keys** (`sk-...`) and **Token Plan keys** (`sk-sp-...`). Token Plan keys are automatically routed to the Token Plan endpoint — see the [Token Plan model catalog](https://alioth-intl.alicdn.com/skills-info/models/references/qwencloud-token-plan-models.md) for supported models. If CDN access fails, use the [local fallback](cdn/references/qwencloud-token-plan-models.md).
+Scripts support both **standard QwenCloud API keys** (`sk-...`) and **Token Plan keys** (`sk-sp-...`). Token Plan keys are automatically routed to the Token Plan endpoint — see the [Token Plan model catalog](https://alioth-intl.alicdn.com/skills-info/${QWEN_REGION}/models/references/qwencloud-token-plan-models.md) for supported models. If CDN access fails, use the [local fallback](cdn/references/qwencloud-token-plan-models.md).
 
 **Token Plan: do not use curl; always use the bundled Python script.**
 
@@ -65,7 +73,7 @@ print(detect_api_key_type('scripts/qwencloud_lib.py'))
 >
 > Selection guidance below applies **only when the user has NOT specified a model**.
 
-Before selecting, recommending, or defaulting a model, fetch and read the current [QwenCloud text model catalog](https://alioth-intl.alicdn.com/skills-info/models/references/qwencloud-text-models.md). It contains recent Qwen general-purpose models, basic model information, recommendations, and the default model. For coding, translation, or third-party families, consult qwencloud-model-selector or the QwenCloud CLI. If CDN access fails, use the [local fallback](cdn/references/qwencloud-text-models.md).
+Before selecting, recommending, or defaulting a model, fetch and read the current [QwenCloud text model catalog](https://alioth-intl.alicdn.com/skills-info/${QWEN_REGION}/models/references/qwencloud-text-models.md). It contains recent Qwen general-purpose models, basic model information, recommendations, and the default model. For coding, translation, or third-party families, consult qwencloud-model-selector or the QwenCloud CLI. If CDN access fails, use the [local fallback](cdn/references/qwencloud-text-models.md).
 
 1. **User specified a model** → **MANDATORY: use that exact model** — do not substitute, do not "optimize", do not add unrequested parameters.
 2. **Consult the qwencloud-model-selector skill** when model choice depends on requirement, scenario, or pricing.
@@ -243,7 +251,7 @@ Token Plan keys (`sk-sp-...`) are fully supported. The script automatically rout
 
 ### Supported models
 
-Fetch and read the current [Token Plan model catalog](https://alioth-intl.alicdn.com/skills-info/models/references/qwencloud-token-plan-models.md), then use an exact listed text-capable model. If CDN access fails, use the [local fallback](cdn/references/qwencloud-token-plan-models.md).
+Fetch and read the current [Token Plan model catalog](https://alioth-intl.alicdn.com/skills-info/${QWEN_REGION}/models/references/qwencloud-token-plan-models.md), then use an exact listed text-capable model. If CDN access fails, use the [local fallback](cdn/references/qwencloud-token-plan-models.md).
 
 ### Behavior
 

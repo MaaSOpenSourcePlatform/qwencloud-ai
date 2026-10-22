@@ -1,10 +1,12 @@
 # Token Plan
 
+Follow the [Region rules](../SKILL.md#region-rules) before using these URLs or examples. Substitute the resolved Region ID for `${QWEN_REGION}` in CDN links; direct curl/SDK examples use the same region.
+
 > Sources:
 > - https://docs.qwencloud.com/token-plan/overview
 > - https://docs.qwencloud.com/token-plan/personal/token-plan-personal-overview
 > - https://docs.qwencloud.com/token-plan/team/token-plan-team-overview
-> - [CDN Token Plan model catalog](https://alioth-intl.alicdn.com/skills-info/models/references/qwencloud-token-plan-models.md) — Personal and Team model lists, modality constraints, and exclusions. If CDN access fails, use the [local fallback](../cdn/references/qwencloud-token-plan-models.md).
+> - [CDN Token Plan model catalog](https://alioth-intl.alicdn.com/skills-info/${QWEN_REGION}/models/references/qwencloud-token-plan-models.md) — Personal and Team model lists, modality constraints, and exclusions. If CDN access fails, use the [local fallback](../cdn/references/qwencloud-token-plan-models.md).
 > Catalog checked: 2026-09-06
 
 ## Three Key/Plan Types
@@ -14,7 +16,7 @@ QwenCloud has three mutually exclusive authentication and billing systems:
 | Dimension | Standard Key (PAYG) | Token Plan | Coding Plan |
 |-----------|---------------------|------------|-------------|
 | Key format | `sk-ws-xxxxx` | `sk-sp-xxxxx` | `sk-sp-xxxxx` |
-| Base URL (OpenAI) | `dashscope-intl.aliyuncs.com/compatible-mode/v1` | `token-plan.ap-southeast-1.maas.aliyuncs.com/compatible-mode/v1` | `coding-intl.dashscope.aliyuncs.com/v1` |
+| Base URL (OpenAI) | `${QWEN_REGION}.maas.qwencloudapi.com/compatible-mode/v1` | `token-plan.ap-southeast-1.maas.aliyuncs.com/compatible-mode/v1` | `coding-intl.dashscope.aliyuncs.com/v1` |
 | Base URL (Anthropic) | N/A | `token-plan.ap-southeast-1.maas.aliyuncs.com/apps/anthropic` | `coding-intl.dashscope.aliyuncs.com/apps/anthropic` |
 | Models | Full catalog | Catalog-defined; use the CDN model catalog above | See [codingplan.md](codingplan.md) |
 | Billing | Per-token/image/second | Credits (unified) | Requests per week/month |
@@ -32,9 +34,9 @@ modality constraints, and exclusions.
 
 | Key Type | Base URL | Result |
 |----------|----------|--------|
-| `sk-ws-` | `dashscope-intl.aliyuncs.com/...` | OK |
+| `sk-ws-` | `${QWEN_REGION}.maas.qwencloudapi.com/...` | OK |
 | `sk-ws-` | `token-plan.ap-southeast-1.../...` | **401** — PAYG key rejected |
-| `sk-sp-` | `dashscope-intl.aliyuncs.com/...` | **401** — Token Plan key rejected |
+| `sk-sp-` | `${QWEN_REGION}.maas.qwencloudapi.com/...` | **401** — Token Plan key rejected |
 | `sk-sp-` | `token-plan.ap-southeast-1.../...` | OK |
 | `sk-sp-` | `coding-intl.dashscope.aliyuncs.com/...` | **Coding agent context required** |
 

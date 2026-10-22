@@ -1,12 +1,14 @@
 # Qwen-VL-OCR Text Extraction Guide
 
+Follow the [Region rules](../SKILL.md#region-rules) before using these URLs or examples. Substitute the resolved Region ID for `${QWEN_REGION}` in CDN links; direct curl/SDK examples use the same region.
+
 > **Content validity**: 2026-03 | **Source**: [Qwen-VL-OCR](https://docs.qwencloud.com/developer-guides/multimodal/ocr)
 
 ---
 
 ## Overview
 
-Fetch and read the current [QwenCloud vision model catalog](https://alioth-intl.alicdn.com/skills-info/models/references/qwencloud-vision-models.md) for OCR model recommendations, defaults, supported models, and basic capabilities. If CDN access fails, use the [local fallback](../cdn/references/qwencloud-vision-models.md).
+Fetch and read the current [QwenCloud vision model catalog](https://alioth-intl.alicdn.com/skills-info/${QWEN_REGION}/models/references/qwencloud-vision-models.md) for OCR model recommendations, defaults, supported models, and basic capabilities. If CDN access fails, use the [local fallback](../cdn/references/qwencloud-vision-models.md).
 
 ---
 
@@ -58,9 +60,11 @@ If no prompt is provided, the model uses: *"Please output only the text content 
 from openai import OpenAI
 import os
 
+QWEN_REGION = os.getenv("QWEN_REGION", "ap-southeast-1").strip().lower() or "ap-southeast-1"
+
 client = OpenAI(
     api_key=os.getenv("DASHSCOPE_API_KEY"),
-    base_url="https://dashscope-intl.aliyuncs.com/compatible-mode/v1",
+    base_url=f"https://{QWEN_REGION}.maas.qwencloudapi.com/compatible-mode/v1",
 )
 
 completion = client.chat.completions.create(
@@ -108,7 +112,7 @@ print(completion.choices[0].message.content)
 ### curl
 
 ```bash
-curl -X POST https://dashscope-intl.aliyuncs.com/compatible-mode/v1/chat/completions \
+curl -X POST "https://${QWEN_REGION:-ap-southeast-1}.maas.qwencloudapi.com/compatible-mode/v1/chat/completions" \
   -H "Authorization: Bearer $DASHSCOPE_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{

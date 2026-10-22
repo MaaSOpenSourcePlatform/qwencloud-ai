@@ -4,11 +4,16 @@
     "default_voice": "Cherry",
     "ws_models": [
       "qwen-audio-3.0-tts-plus",
+      "qwen-audio-3.1-tts-flash",
       "qwen-audio-3.0-tts-flash"
     ],
     "ws_default_voices": {
       "qwen-audio-3.0-tts-plus": "longanlingxin",
+      "qwen-audio-3.1-tts-flash": "longanfengyue_v3.1",
       "qwen-audio-3.0-tts-flash": "longanfengyue"
+    },
+    "nrt_default_voices": {
+      "qwen-audio-3.0-tts-plus": "longanlingxin"
     }
   },
   "cosyvoice": {
@@ -62,6 +67,12 @@
         "longanhuan",
         "longhuhu_v3"
       ]
-    }
+    },
+    "custom_voice_only_models": [],
+    "nrt_models": [],
+    "instruction_models": [
+      "cosyvoice-v3-plus",
+      "cosyvoice-v3-flash"
+    ]
   }
 }

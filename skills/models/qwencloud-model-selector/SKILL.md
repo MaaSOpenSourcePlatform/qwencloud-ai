@@ -11,7 +11,7 @@ This skill operates in two modes:
 1. **Interactive advisory** — asks diagnostic questions to recommend the right model (see Diagnostic Flow).
 2. **Cross-skill resolution** — provides a fast-path model lookup for execution skills that need a model
    decision without user interaction. Fetch the
-   [CDN recommendations](https://alioth-intl.alicdn.com/skills-info/models/references/qwencloud-model-recommendations.md)
+   [CDN recommendations](https://alioth-intl.alicdn.com/skills-info/${QWEN_REGION}/models/references/qwencloud-model-recommendations.md)
    first; if CDN access fails, use the
    [local fallback](cdn/references/qwencloud-model-recommendations.md).
 
@@ -20,22 +20,30 @@ This skill is part of **qwencloud/qwencloud-ai**.
 
 > **🚫 CRITICAL — Never override a user-specified model.** If the user (or the requesting execution skill) has already explicitly specified a model, this skill's job is done for that request: use the model **as given**. Do NOT recommend a "better suited" or newer model in its place, and do NOT add parameters (thinking mode, style hints) the user did not ask for. Recommendations and diagnostic flows below apply **only when no model has been specified**. You may verify availability and, if the model is unavailable/restricted, inform the user and suggest alternatives — but the user makes the final call.
 
+## Region rules
+
+- Use the Region ID requested for this operation first, then the existing `QWEN_REGION` from the environment or `.env`, then `ap-southeast-1` (Singapore). For a Chinese region name, fetch the root [region map](https://alioth-intl.alicdn.com/skills-info/regions.md) to resolve its ID. If the map is unavailable, an explicit Region ID still works; an unresolved name requires a Region ID, never a silent switch to Singapore.
+- Pass only the Region ID through `QWEN_REGION` when calling Python. Ordinary model requests use `${QWEN_REGION}.maas.qwencloudapi.com`; HTTP, SSE, upload policy, task queries, and WebSocket use that same region and retain their protocol paths. Replace `${QWEN_REGION}` in CDN URLs with the selected ID before fetching; the manifest is `https://alioth-intl.alicdn.com/skills-info/${QWEN_REGION}/manifest.json`.
+- Token Plan keeps its dedicated endpoint and credential logic. Preserve the advanced `QWEN_BASE_URL` override; legacy `QWEN_REGION=none` with a custom base URL uses the `ap-southeast-1` model CDN directory. CLI commands and arguments are unchanged.
+- Regional CDN catalogs are temporary copies, pending regional model, pricing, and source verification. If the CDN is unavailable, use the bundled local snapshot as the Singapore default fallback; its source region is still unverified. A catalog fallback never changes the selected inference region.
+- Keep each asynchronous task's submission region with its task ID. Use that same `QWEN_REGION` for polling and recovery, even if the current default has changed.
+
 ## Skill directory
 
 Load on demand. Fetch the documented CDN model catalogs when model lists, defaults, or recommendations
-are needed. Do not fetch other external URLs unless the user explicitly asks for the latest data.
+are needed, and fetch the root region map when resolving a Chinese region name. Do not fetch other external URLs unless the user explicitly asks for the latest data.
 
 Every path under `cdn/` is a local fallback, not the primary source. For `cdn/<path>`, first fetch
-`https://alioth-intl.alicdn.com/skills-info/models/<path>` and use the local file only if that request fails.
+`https://alioth-intl.alicdn.com/skills-info/${QWEN_REGION}/models/<path>` and use the local file only if that request fails.
 
 | Location                                  | Purpose                                                                          |
 |-------------------------------------------|----------------------------------------------------------------------------------|
 | `references/cli-usage.md`                 | **CLI-first data strategy**: when to use CLI, 3-step login flow, display rules   |
 | `references/error-handling.md`            | CLI error classification & recovery actions (auth, not-found, network, ...)      |
-| [CDN model recommendations](https://alioth-intl.alicdn.com/skills-info/models/references/qwencloud-model-recommendations.md) | Cross-skill recommendations, Token Plan constraints, and thinking defaults; if unavailable, use the [local fallback](cdn/references/qwencloud-model-recommendations.md) |
+| [CDN model recommendations](https://alioth-intl.alicdn.com/skills-info/${QWEN_REGION}/models/references/qwencloud-model-recommendations.md) | Cross-skill recommendations, Token Plan constraints, and thinking defaults; if unavailable, use the [local fallback](cdn/references/qwencloud-model-recommendations.md) |
 | `references/pricing-disclaimer.md`        | Pricing guidance + **mandatory** cost-estimation disclaimer (CN/EN) + console links |
 | `references/pricing.md`                   | Stable billing guidance and CDN pricing fallback                                |
-| [CDN model catalog](https://alioth-intl.alicdn.com/skills-info/models/references/qwencloud-model-list.md) | Cross-domain model catalog snapshot; if unavailable, use the [local fallback](cdn/references/qwencloud-model-list.md) |
+| [CDN model catalog](https://alioth-intl.alicdn.com/skills-info/${QWEN_REGION}/models/references/qwencloud-model-list.md) | Cross-domain model catalog snapshot; if unavailable, use the [local fallback](cdn/references/qwencloud-model-list.md) |
 | `references/sources.md`                   | Official documentation URLs (manual lookup only)                                 |
 
 ## Prerequisites
@@ -104,7 +112,7 @@ print('token-plan' if key.startswith('sk-sp-') else 'payg' if key else 'not-set'
 
 | Key type | Recommendation scope |
 |----------|----------------------|
-| `token-plan` | Fetch the [Token Plan model catalog](https://alioth-intl.alicdn.com/skills-info/models/references/qwencloud-token-plan-models.md) and select only from it; default to the Team superset when the edition is unknown. If CDN access fails, use the [local fallback](cdn/references/qwencloud-token-plan-models.md). |
+| `token-plan` | Fetch the [Token Plan model catalog](https://alioth-intl.alicdn.com/skills-info/${QWEN_REGION}/models/references/qwencloud-token-plan-models.md) and select only from it; default to the Team superset when the edition is unknown. If CDN access fails, use the [local fallback](cdn/references/qwencloud-token-plan-models.md). |
 | `payg` | Full model catalog |
 | `not-set` | **Do not block** — ask the user: "Which approach do you plan to use? (1) Standard PAYG key (2) Token Plan key (3) Skip for now — just browse recommendations." and proceed based on their choice |
 
@@ -118,7 +126,7 @@ the recovery actions in the higher tier first.**
 
 | Question type                                                  | Primary source                                          | Notes                                                |
 |----------------------------------------------------------------|---------------------------------------------------------|------------------------------------------------------|
-| General navigation or point-in-time model details             | [CDN recommendations](https://alioth-intl.alicdn.com/skills-info/models/references/qwencloud-model-recommendations.md) and domain catalogs | Fetch first; if unavailable, use the matching local fallback and identify it as a snapshot |
+| General navigation or point-in-time model details             | [CDN recommendations](https://alioth-intl.alicdn.com/skills-info/${QWEN_REGION}/models/references/qwencloud-model-recommendations.md) and domain catalogs | Fetch first; if unavailable, use the matching local fallback and identify it as a snapshot |
 | **Latest / exact / specific** (price, model details, quota)    | **CLI MUST be used** — see `cli-usage.md`               | Snapshots are stale; never invent numbers            |
 | Search by capability ("model that does X")                     | `qwencloud models search "<X>" --format json`           | Snapshot keyword coverage is incomplete              |
 | CLI returned an error                                          | `error-handling.md` recovery actions, **then retry**    | Auth failure → run 3-step login, do not skip to snapshot |
@@ -138,7 +146,7 @@ Ask the user (in order):
 ## Default Recommendations
 
 Before choosing a default or recommending a model, fetch and read the current
-[CDN recommendations](https://alioth-intl.alicdn.com/skills-info/models/references/qwencloud-model-recommendations.md).
+[CDN recommendations](https://alioth-intl.alicdn.com/skills-info/${QWEN_REGION}/models/references/qwencloud-model-recommendations.md).
 For a Token Plan key, also read the Token Plan catalog linked above and restrict candidates to it.
 
 - If the user explicitly specifies a model, preserve it and only report genuine availability conflicts.
@@ -242,10 +250,10 @@ When the user asks to check for updates ("check for updates", "check version", "
 |--------------------------------------------------------------|------------------------------------------------------------------|
 | [cli-usage.md](references/cli-usage.md)                      | CLI-first strategy, 3-step login, display rules, model detail URL |
 | [error-handling.md](references/error-handling.md)            | CLI error classification & recovery                              |
-| [qwencloud-model-recommendations.md (CDN)](https://alioth-intl.alicdn.com/skills-info/models/references/qwencloud-model-recommendations.md) ([local fallback](cdn/references/qwencloud-model-recommendations.md)) | Cross-skill recommendations, Token Plan, and thinking mode |
+| [qwencloud-model-recommendations.md (CDN)](https://alioth-intl.alicdn.com/skills-info/${QWEN_REGION}/models/references/qwencloud-model-recommendations.md) ([local fallback](cdn/references/qwencloud-model-recommendations.md)) | Cross-skill recommendations, Token Plan, and thinking mode |
 | [pricing-disclaimer.md](references/pricing-disclaimer.md)    | Pricing guidance + mandatory disclaimer + billing console links  |
 | [pricing.md](references/pricing.md)                          | Stable billing guidance and CDN pricing fallback                 |
-| [qwencloud-model-list.md (CDN)](https://alioth-intl.alicdn.com/skills-info/models/references/qwencloud-model-list.md) ([local fallback](cdn/references/qwencloud-model-list.md)) | Cross-domain model catalog snapshot                              |
+| [qwencloud-model-list.md (CDN)](https://alioth-intl.alicdn.com/skills-info/${QWEN_REGION}/models/references/qwencloud-model-list.md) ([local fallback](cdn/references/qwencloud-model-list.md)) | Cross-domain model catalog snapshot                              |
 | [sources.md](references/sources.md)                          | Official documentation URLs                                      |
 | `qwencloud models list --format json`                        | Dynamic: full model catalog with pricing, features, quotas       |
 | `qwencloud models info <id> --format json`                   | Dynamic: single model details (pricing tiers, context, rate limits) |

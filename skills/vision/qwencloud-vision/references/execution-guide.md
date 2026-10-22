@@ -1,5 +1,7 @@
 # Qwen Vision — Execution Guide
 
+Follow the [Region rules](../SKILL.md#region-rules) before using these URLs or examples. Substitute the resolved Region ID for `${QWEN_REGION}` in CDN links; direct curl/SDK examples use the same region.
+
 Fallback paths when bundled scripts (Path 1) fail or are unavailable.
 
 ## Path 0 · Environment Fix
@@ -20,7 +22,7 @@ All vision calls use the OpenAI-compatible chat completions endpoint. Images and
 **Single image (URL):**
 
 ```bash
-curl -sS -X POST "https://dashscope-intl.aliyuncs.com/compatible-mode/v1/chat/completions" \
+curl -sS -X POST "https://${QWEN_REGION:-ap-southeast-1}.maas.qwencloudapi.com/compatible-mode/v1/chat/completions" \
   -H "Authorization: Bearer $DASHSCOPE_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
@@ -41,11 +43,11 @@ curl -sS -X POST "https://dashscope-intl.aliyuncs.com/compatible-mode/v1/chat/co
 
 For other input types (local base64, multi-image, video, OCR), see [curl-examples.md](curl-examples.md). The pattern is the same — add `image_url`, `video_url`, or change model to `qwen-vl-ocr`.
 
-**Region endpoints** (replace base URL as needed):
+**Region endpoints** (resolve `QWEN_REGION` before constructing the URL):
 
 | Region | Base URL |
 |--------|----------|
-| Singapore (default) | `https://dashscope-intl.aliyuncs.com/compatible-mode/v1` |
+| Selected `QWEN_REGION` (default: `ap-southeast-1`) | `https://${QWEN_REGION}.maas.qwencloudapi.com/compatible-mode/v1` |
 
 ## Paths 3–5 · Fallback Cascade
 

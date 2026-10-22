@@ -1,5 +1,7 @@
 # Qwen Text Chat — Execution Guide
 
+Follow the [Region rules](../SKILL.md#region-rules) before using these URLs or examples. Substitute the resolved Region ID for `${QWEN_REGION}` in CDN links; direct curl/SDK examples use the same region.
+
 Fallback paths when the bundled script (Path 1) fails or is unavailable.
 
 ## Path 0 · Environment Fix
@@ -18,7 +20,7 @@ After fixing, retry the script (Path 1). If the environment is unfixable, fall t
 **Non-streaming** — single request, full response:
 
 ```bash
-curl -sS -X POST "https://dashscope-intl.aliyuncs.com/compatible-mode/v1/chat/completions" \
+curl -sS -X POST "https://${QWEN_REGION:-ap-southeast-1}.maas.qwencloudapi.com/compatible-mode/v1/chat/completions" \
   -H "Authorization: Bearer $DASHSCOPE_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
@@ -42,7 +44,7 @@ curl -sS -X POST "https://dashscope-intl.aliyuncs.com/compatible-mode/v1/chat/co
 **Streaming** — tokens arrive incrementally, recommended for interactive use:
 
 ```bash
-curl -sS --no-buffer -X POST "https://dashscope-intl.aliyuncs.com/compatible-mode/v1/chat/completions" \
+curl -sS --no-buffer -X POST "https://${QWEN_REGION:-ap-southeast-1}.maas.qwencloudapi.com/compatible-mode/v1/chat/completions" \
   -H "Authorization: Bearer $DASHSCOPE_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
@@ -54,11 +56,11 @@ curl -sS --no-buffer -X POST "https://dashscope-intl.aliyuncs.com/compatible-mod
 
 Each SSE chunk contains `choices[0].delta.content` with partial text.
 
-**Region endpoints** (replace base URL as needed):
+**Region endpoints** (resolve `QWEN_REGION` before constructing the URL):
 
 | Region | Base URL |
 |--------|----------|
-| Singapore (default) | `https://dashscope-intl.aliyuncs.com/compatible-mode/v1` |
+| Selected `QWEN_REGION` (default: `ap-southeast-1`) | `https://${QWEN_REGION}.maas.qwencloudapi.com/compatible-mode/v1` |
 
 ## Paths 3–5 · Fallback Cascade
 
@@ -72,9 +74,11 @@ OpenAI SDK example:
 from openai import OpenAI
 import os
 
+QWEN_REGION = os.getenv("QWEN_REGION", "ap-southeast-1").strip().lower() or "ap-southeast-1"
+
 client = OpenAI(
     api_key=os.getenv("DASHSCOPE_API_KEY"),
-    base_url="https://dashscope-intl.aliyuncs.com/compatible-mode/v1",
+    base_url=f"https://{QWEN_REGION}.maas.qwencloudapi.com/compatible-mode/v1",
 )
 
 response = client.chat.completions.create(
@@ -126,7 +130,7 @@ response = client.chat.completions.create(
 
 ## Thinking Mode
 
-Thinking support and defaults vary by model; fetch and read the [CDN model catalog](https://alioth-intl.alicdn.com/skills-info/models/references/qwencloud-text-models.md) before overriding them. If CDN access fails, use the [local fallback](../cdn/references/qwencloud-text-models.md). Omit `enable_thinking` to preserve the selected model's default behavior, and set it only when the user explicitly asks for an override.
+Thinking support and defaults vary by model; fetch and read the [CDN model catalog](https://alioth-intl.alicdn.com/skills-info/${QWEN_REGION}/models/references/qwencloud-text-models.md) before overriding them. If CDN access fails, use the [local fallback](../cdn/references/qwencloud-text-models.md). Omit `enable_thinking` to preserve the selected model's default behavior, and set it only when the user explicitly asks for an override.
 
 ```python
 response = client.chat.completions.create(

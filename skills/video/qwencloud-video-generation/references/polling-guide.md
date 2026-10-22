@@ -2,6 +2,10 @@
 
 Video generation tasks are **asynchronous**: the API returns a `task_id` immediately, video rendering happens server-side (typically 1–10 min). The script provides **4 flexible execution patterns** to fit different workflows.
 
+## Region continuity
+
+Resolve `QWEN_REGION` using the [Region rules](../SKILL.md#region-rules) before submission and keep that value with the returned `task_id`. Every later `--task-id` invocation, status query, or resumed poll must use the submission region. Do not apply a newly selected or default region to an existing task; a missing catalog or failed region-map request does not move the task.
+
 ## Script Arguments for Polling Control
 
 | Argument | Default | Description |
