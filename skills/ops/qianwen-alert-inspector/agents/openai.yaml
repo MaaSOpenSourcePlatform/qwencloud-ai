@@ -1,0 +1,4 @@
+interface:
+  display_name: "QianWen Alert Inspector"
+  short_description: "Inspect model alerts and diagnose failures with API evidence."
+  default_prompt: "Use $qianwen-alert-inspector to inspect recent QianWen model alerts, explain their triggers, and recommend evidence-based remedies."
